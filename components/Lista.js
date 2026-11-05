@@ -118,8 +118,11 @@ export default function Lista({ inicial }) {
     <>
       <header className="topo">
         <div className="topo-in">
-          <img src="/logo.jpg" alt="LigorioTec" />
-          <h1>Laudos e orçamentos</h1>
+          <img src="/logo-marca.jpg" alt="LigorioTec" />
+          <div className="marca">
+            <span className="eyebrow">LigorioTec · sistema interno</span>
+            <h1>Laudos e orçamentos</h1>
+          </div>
           <span className="sp" />
           <Link className="btn" href="/modelo">Editar modelo</Link>
           <a className="btn" href="/api/backup" download title="Baixa um arquivo com todos os relatórios">Baixar backup</a>
@@ -133,6 +136,10 @@ export default function Lista({ inicial }) {
       </header>
 
       <div className="lista">
+        <div className="lista-titulo">
+          <span className="eyebrow">Atendimentos</span>
+          <h2>Diagnósticos e <em>orçamentos</em></h2>
+        </div>
         {erro && <p className="estado erro" role="alert">{erro}</p>}
         {importando && <p className="estado" role="status">{importando}</p>}
 
@@ -166,7 +173,7 @@ export default function Lista({ inicial }) {
                   {visiveis.map((r) => (
                     <tr key={r.id}>
                       <td className="num">{r.num}</td>
-                      <td>{r.cliente || <em style={{ color: 'var(--muted)' }}>sem nome</em>}</td>
+                      <td className="cli">{r.cliente || <em style={{ color: 'var(--muted)' }}>sem nome</em>}</td>
                       <td>{r.equip}</td>
                       <td className="num">{fdate(r.data)}</td>
                       <td className="num">R$ {brl(r.total)}</td>

@@ -27,7 +27,7 @@ export default function ModeloEditor({ inicial }) {
       <header className="topo">
         <div className="topo-in">
           <Link href="/" className="btn ghost">← Relatórios</Link>
-          <h1>Modelo</h1>
+          <div className="marca"><span className="eyebrow">Textos padrão</span><h1>Modelo</h1></div>
           <span className="sp" />
           <span className={'estado' + (estado.tipo === 'erro' ? ' erro' : '')} role="status">{estado.msg}</span>
           <button className="btn primary" type="button" onClick={salvar} disabled={estado.tipo === 'salvando'}>Salvar modelo</button>

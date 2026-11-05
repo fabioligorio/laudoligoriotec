@@ -28,7 +28,7 @@ function Cabecalho({ r, qr, titulo, umaLinha, rotNum, rotData }) {
     <>
       <div className="pg-top"><i /><b /></div>
       <div className="hd">
-        <img className="logo" src="/logo.jpg" alt="LigorioTec" />
+        <img className="logo" src="/logo-horizontal.jpg" alt="LigorioTec" />
         <div className="vr" />
         <h2 className={umaLinha ? 'one' : ''}>{titulo}</h2>
         <div className="meta">

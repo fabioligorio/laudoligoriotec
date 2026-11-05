@@ -27,7 +27,8 @@ export default function Login() {
   return (
     <main className="login">
       <form onSubmit={entrar}>
-        <img src="/logo.jpg" alt="LigorioTec" />
+        <img src="/logo-completo.jpg" alt="LigorioTec" />
+        <span className="eyebrow">Laudos e orçamentos</span>
         <label htmlFor="senha">Senha
           <input id="senha" type="password" autoComplete="current-password" value={senha} onChange={(e) => setSenha(e.target.value)} autoFocus />
         </label>
