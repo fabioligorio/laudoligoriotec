@@ -27,16 +27,19 @@ As fotos no Blob ficam em endereços públicos com nome aleatório. Ninguém ach
 
 ### 1. Subir o código para o GitHub
 
+Esta pasta é um repositório separado do site (o site ignora a pasta `sistema`).
+
 1. Crie um repositório novo e **privado** em https://github.com/new (ex.: `ligoriotec-laudos`). Não marque para criar README.
-2. No terminal, dentro desta pasta:
+2. No terminal, dentro da pasta `sistema`:
 
 ```bash
-git remote add origin https://github.com/SEU_USUARIO/ligoriotec-laudos.git
+git init
+git add -A
+git commit -m "Sistema de laudos e orçamentos"
 git branch -M main
+git remote add origin https://github.com/SEU_USUARIO/ligoriotec-laudos.git
 git push -u origin main
 ```
-
-(O projeto já vem com o primeiro commit feito.)
 
 ### 2. Importar na Vercel
 
@@ -72,14 +75,16 @@ Daqui em diante, cada `git push` publica uma versão nova automaticamente.
 
 ## Rodar no seu computador
 
-Precisa do Node.js 18.18 ou mais novo.
+Precisa do Node.js 18.18 ou mais novo. No Windows, abra o **Prompt de Comando** ou o **PowerShell**:
 
 ```bash
+cd C:\Users\Fabio\Desktop\LigorioTec\sistema
 npm install
 npm run dev
 ```
 
 Abra http://localhost:3000. Sem as variáveis configuradas, não pede senha e salva tudo na pasta `.data/`.
+Se o site estiver rodando ao mesmo tempo na porta 3000, use `npm run dev -- -p 3001` e abra http://localhost:3001.
 
 Para testar com a senha e o banco de verdade, copie `.env.example` para `.env.local` e preencha.
 

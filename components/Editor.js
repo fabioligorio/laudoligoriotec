@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Folhas } from './Documento';
 import { Texto, Area, Linhas, Foto } from './Campos';
 import { OPCOES_DESENHO } from './Icones';
-import { autoNum, numero } from '@/lib/format';
+import { autoNum, numero, pecasDe } from '@/lib/format';
 
 async function api(url, opts) {
   const res = await fetch(url, {
@@ -36,6 +36,11 @@ export default function Editor({ inicial }) {
   rAtual.current = r;
 
   const travado = r.status === 'concluido';
+  const pecas = pecasDe(r);
+
+  function mudarPeca(i, campo, v) {
+    set('pecas', pecas.map((p, k) => (k === i ? { ...p, [campo]: v } : p)));
+  }
 
   function set(k, v) {
     sujo.current = true;
@@ -238,15 +243,29 @@ export default function Editor({ inicial }) {
                   <Texto id="tDef" rotulo="Título das fotos" valor={r.tDef} onChange={(v) => set('tDef', v)} />
                 </fieldset>
                 <fieldset>
-                  <legend>Peça nova</legend>
-                  <div className="fotos"><Foto id="nova" src={r.newPhoto} bloqueado={travado} onChange={(v) => set('newPhoto', v)} /></div>
-                  <Texto id="tNew" rotulo="Título" valor={r.tNew} onChange={(v) => set('tNew', v)} />
-                  <Texto id="peca" rotulo="Nome da peça" dica="vazio = sem bloco de peça" valor={r.peca} onChange={(v) => set('peca', v)} />
-                  <Texto id="pecaV" tipo="number" rotulo="Valor da peça (R$)" valor={r.pecaV} onChange={(v) => set('pecaV', v)} />
+                  <legend>Peças e produtos</legend>
+                  <Texto id="tNew" rotulo="Título do bloco" valor={r.tNew} onChange={(v) => set('tNew', v)} />
+                  {pecas.map((p, i) => (
+                    <div className="produto" key={i}>
+                      <Foto id={`peca-foto-${i}`} src={p.foto} bloqueado={travado} onChange={(v) => mudarPeca(i, 'foto', v)} />
+                      <div className="campos">
+                        <Texto id={`peca-nome-${i}`} rotulo={`Produto ${i + 1}`} valor={p.nome} onChange={(v) => mudarPeca(i, 'nome', v)} />
+                        <div className="linha">
+                          <Texto id={`peca-qtd-${i}`} tipo="number" rotulo="Qtd." valor={p.qtd} onChange={(v) => mudarPeca(i, 'qtd', v)} />
+                          <Texto id={`peca-valor-${i}`} tipo="number" rotulo="Valor unitário (R$)" valor={p.valor} onChange={(v) => mudarPeca(i, 'valor', v)} />
+                          <button type="button" className="icon-btn" aria-label={`Remover produto ${i + 1}`} onClick={() => set('pecas', pecas.filter((_, k) => k !== i))}>×</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <button type="button" className="add" onClick={() => set('pecas', [...pecas, { nome: '', qtd: 1, valor: '', foto: '' }])}>
+                    + Adicionar produto
+                  </button>
                   <label className="check" htmlFor="pecaItem">
                     <input id="pecaItem" type="checkbox" checked={!!r.pecaItem} onChange={(e) => set('pecaItem', e.target.checked)} />
-                    Incluir a peça como último item do orçamento
+                    Somar os produtos na tabela de serviços
                   </label>
+                  <p className="hint">Com mais de um produto, o bloco vira uma lista com foto pequena. Muitos produtos podem passar para uma terceira folha no PDF.</p>
                 </fieldset>
                 <fieldset>
                   <legend>Serviços</legend>

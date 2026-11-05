@@ -9,7 +9,7 @@ const idValido = (id) => /^[\w-]{8,64}$/.test(id || '');
 const EDITAVEIS = [
   'cliente', 'data', 'num', 'equip', 'comp', 'alim', 'icone', 'eqPhoto',
   'tecnico', 'site', 'zap', 'recl', 'proc', 'res', 'diag', 'concl', 'resultado',
-  'tDef', 'defPhotos', 'tNew', 'newPhoto', 'peca', 'pecaV', 'pecaItem', 'itens',
+  'tDef', 'defPhotos', 'tNew', 'pecas', 'pecaItem', 'itens',
   'gar', 'garObs', 'pag', 'prazo',
 ];
 

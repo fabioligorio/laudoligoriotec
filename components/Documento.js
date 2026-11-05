@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 import QRCode from 'qrcode';
 import * as I from './Icones';
-import { brl, fdate, numero, itensDoOrcamento, totalDoOrcamento, linhas } from '@/lib/format';
+import { brl, fdate, numero, itensDoOrcamento, totalDoOrcamento, linhas, pecasDe, qtdDe, subtotalDe } from '@/lib/format';
 
 /* QR que abre conversa no WhatsApp da empresa */
 export function useQR(zap, site) {
@@ -144,6 +144,7 @@ export function Laudo({ r, qr }) {
 export function Orcamento({ r, qr }) {
   const itens = itensDoOrcamento(r);
   const fotos = (r.defPhotos || []).filter(Boolean);
+  const pecas = pecasDe(r).filter((p) => String(p.nome || '').trim());
   return (
     <div className="page">
       <Cabecalho r={r} qr={qr} titulo="ORÇAMENTO" umaLinha rotNum="Nº do orçamento" rotData="Data do orçamento" />
@@ -178,17 +179,34 @@ export function Orcamento({ r, qr }) {
         </>
       )}
 
-      {r.peca && (
+      {pecas.length === 1 && (
         <div className="card" style={{ padding: '10px 12px', marginTop: 12 }}>
           <div className="lab good"><I.Visto cor="#1e7d3a" />{r.tNew}</div>
           <div className="newp">
-            <div className="im">{r.newPhoto ? <img src={r.newPhoto} alt="" /> : 'sem foto'}</div>
+            <div className="im">{pecas[0].foto ? <img src={pecas[0].foto} alt="" /> : 'sem foto'}</div>
             <div>
               <p>Peça:</p>
-              <p className="pn">{r.peca}</p>
+              <p className="pn">{pecas[0].nome}</p>
+              {qtdDe(pecas[0]) > 1 && <p style={{ marginBottom: 12 }}>Quantidade: <b>{qtdDe(pecas[0])}</b> × R$ {brl(pecas[0].valor)}</p>}
               <p>Valor da Peça:</p>
-              <p className="pv">R$ {brl(r.pecaV)}</p>
+              <p className="pv">R$ {brl(subtotalDe(pecas[0]))}</p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {pecas.length > 1 && (
+        <div className="card" style={{ padding: '10px 12px', marginTop: 12 }}>
+          <div className="lab good"><I.Visto cor="#1e7d3a" />{r.tNew}</div>
+          <div className="plist">
+            {pecas.map((p, i) => (
+              <div className="pr" key={i}>
+                <div className="im">{p.foto ? <img src={p.foto} alt="" /> : 'sem foto'}</div>
+                <div className="pn">{p.nome}</div>
+                <div className="pq">{qtdDe(p)} × R$ {brl(p.valor)}</div>
+                <div className="pv">R$ {brl(subtotalDe(p))}</div>
+              </div>
+            ))}
           </div>
         </div>
       )}
