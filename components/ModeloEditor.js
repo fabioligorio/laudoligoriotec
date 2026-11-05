@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Texto, Area, Linhas } from './Campos';
 import { OPCOES_DESENHO } from './Icones';
+import { Logo } from './Marca';
 
 export default function ModeloEditor({ inicial }) {
   const [m, setM] = useState(inicial);
@@ -26,8 +27,9 @@ export default function ModeloEditor({ inicial }) {
     <>
       <header className="topo">
         <div className="topo-in">
+          <Link href="/" className="marca-link" aria-label="Voltar para os relatórios"><Logo escuro altura={30} /></Link>
+          <span className="titulo">Textos padrão<b>Modelo</b></span>
           <Link href="/" className="btn ghost">← Relatórios</Link>
-          <div className="marca"><span className="eyebrow">Textos padrão</span><h1>Modelo</h1></div>
           <span className="sp" />
           <span className={'estado' + (estado.tipo === 'erro' ? ' erro' : '')} role="status">{estado.msg}</span>
           <button className="btn primary" type="button" onClick={salvar} disabled={estado.tipo === 'salvando'}>Salvar modelo</button>

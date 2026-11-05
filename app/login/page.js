@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { Logo } from '@/components/Marca';
 
 export default function Login() {
   const [senha, setSenha] = useState('');
@@ -26,17 +27,23 @@ export default function Login() {
 
   return (
     <main className="login">
-      <form onSubmit={entrar}>
-        <img src="/logo-completo.jpg" alt="LigorioTec" />
-        <span className="eyebrow">Laudos e orçamentos</span>
-        <label htmlFor="senha">Senha
-          <input id="senha" type="password" autoComplete="current-password" value={senha} onChange={(e) => setSenha(e.target.value)} autoFocus />
-        </label>
-        {erro && <p className="estado erro" role="alert" style={{ margin: 0 }}>{erro}</p>}
-        <button className="btn primary" type="submit" disabled={enviando || !senha} style={{ justifyContent: 'center' }}>
-          {enviando ? 'Entrando…' : 'Entrar'}
-        </button>
-      </form>
+      <div className="caixa">
+        <div className="topo-login">
+          <Logo escuro altura={52} />
+          <p className="assinatura">Tecnologia que conecta.</p>
+        </div>
+        <form onSubmit={entrar}>
+          <span className="marcador">Sistema interno</span>
+          <h1>Laudos e orçamentos</h1>
+          <label htmlFor="senha">Senha
+            <input id="senha" type="password" autoComplete="current-password" value={senha} onChange={(e) => setSenha(e.target.value)} autoFocus />
+          </label>
+          {erro && <p className="estado erro" role="alert" style={{ margin: 0 }}>{erro}</p>}
+          <button className="btn primary" type="submit" disabled={enviando || !senha}>
+            {enviando ? 'Entrando…' : 'Entrar'}
+          </button>
+        </form>
+      </div>
     </main>
   );
 }

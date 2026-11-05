@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { brl, fdate } from '@/lib/format';
 import { STATUS } from '@/lib/status';
+import { Logo } from './Marca';
 
 export default function Lista({ inicial }) {
   const router = useRouter();
@@ -118,11 +119,8 @@ export default function Lista({ inicial }) {
     <>
       <header className="topo">
         <div className="topo-in">
-          <img src="/logo-marca.jpg" alt="LigorioTec" />
-          <div className="marca">
-            <span className="eyebrow">LigorioTec · sistema interno</span>
-            <h1>Laudos e orçamentos</h1>
-          </div>
+          <a className="marca-link" href="/" aria-label="LigorioTec, início"><Logo escuro altura={34} /></a>
+          <span className="titulo">Sistema interno<b>Laudos e orçamentos</b></span>
           <span className="sp" />
           <Link className="btn" href="/modelo">Editar modelo</Link>
           <a className="btn" href="/api/backup" download title="Baixa um arquivo com todos os relatórios">Baixar backup</a>
@@ -137,7 +135,7 @@ export default function Lista({ inicial }) {
 
       <div className="lista">
         <div className="lista-titulo">
-          <span className="eyebrow">Atendimentos</span>
+          <span className="marcador">Atendimentos</span>
           <h2>Diagnósticos e <em>orçamentos</em></h2>
         </div>
         {erro && <p className="estado erro" role="alert">{erro}</p>}

@@ -1,5 +1,5 @@
 // Ícones do documento (cores fixas, o papel é sempre branco)
-const AZUL = '#0b4ea2';
+const AZUL = '#0B0F0D';
 
 export const Pessoa = ({ cor = AZUL }) => (
   <svg viewBox="0 0 24 24" fill={cor}><circle cx="12" cy="7.5" r="4.5" /><path d="M3 21c0-5 4-8 9-8s9 3 9 8z" /></svg>

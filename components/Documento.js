@@ -5,6 +5,7 @@ const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : use
 import QRCode from 'qrcode';
 import { ajustarFolhas } from '@/lib/impressao';
 import * as I from './Icones';
+import { Logo, Simbolo } from './Marca';
 import { brl, fdate, numero, itensDoOrcamento, totalDoOrcamento, linhas, itens, paragrafos, pecasDe, qtdDe, subtotalDe } from '@/lib/format';
 
 /* QR que abre conversa no WhatsApp da empresa */
@@ -28,7 +29,7 @@ function Cabecalho({ r, qr, titulo, umaLinha, rotNum, rotData }) {
     <>
       <div className="pg-top"><i /><b /></div>
       <div className="hd">
-        <img className="logo" src="/logo-horizontal.jpg" alt="LigorioTec" />
+        <Logo altura={34} />
         <div className="vr" />
         <h2 className={umaLinha ? 'one' : ''}>{titulo}</h2>
         <div className="meta">
@@ -67,15 +68,16 @@ function Rodape({ r }) {
         <div className="vs" />
         <div className="it"><I.Telefone /><span>{r.zap}<br /><em>(WhatsApp)</em></span></div>
         <div className="vs" />
-        <div className="it"><I.Escudo /><span><em>Assistência técnica especializada</em><br /><b>Compromisso com qualidade e confiança</b></span></div>
+        <div className="it"><Simbolo tamanho={26} /><span><b>Tecnologia que conecta.</b><br /><em>Assistência técnica especializada</em></span></div>
       </div>
       <div className="pg-bot"><i /><b /></div>
     </>
   );
 }
 
-function Secao({ icone, children }) {
-  return <div className="sec">{icone}{children}</div>;
+// Título de seção com o quadrado verde do monograma como marcador (brandbook, seção 5)
+function Secao({ children }) {
+  return <div className="sec"><span className="mk" />{children}</div>;
 }
 
 export function Laudo({ r, qr }) {
@@ -132,7 +134,7 @@ export function Laudo({ r, qr }) {
         <div className="box">{paragrafos(r.concl)}</div>
         <div className={'stat' + (aprovado ? ' ok' : '')}>
           <div className="t">STATUS</div>
-          <div className="v">{aprovado ? <I.Visto cor="#1e7d3a" /> : <I.Xis />}{aprovado ? 'APROVADO' : 'REPROVADO'}</div>
+          <div className="v">{aprovado ? <I.Visto cor="#0A7A43" /> : <I.Xis />}{aprovado ? 'APROVADO' : 'REPROVADO'}</div>
         </div>
       </div>
 
@@ -156,14 +158,14 @@ export function Orcamento({ r, qr }) {
 
       <div className="pair">
         <div className="card">
-          <div className="ch"><I.Pessoa cor="#fff" />Dados do cliente</div>
+          <div className="ch"><span className="mk" />Dados do cliente</div>
           <div className="kv">
             <div className="r"><span>Cliente:</span><b>{r.cliente}</b></div>
             <div className="r"><span>Técnico Responsável:</span><b>{r.tecnico}</b></div>
           </div>
         </div>
         <div className="card">
-          <div className="ch"><I.Chave cor="#fff" />Dados do equipamento</div>
+          <div className="ch"><span className="mk" />Dados do equipamento</div>
           <div className="kv">
             <div className="r"><span>Equipamento:</span><b>{r.equip}</b></div>
             <div className="r"><span>Componente:</span><b>{r.comp}</b></div>
@@ -186,7 +188,7 @@ export function Orcamento({ r, qr }) {
 
       {pecas.length === 1 && (
         <div className="card" style={{ padding: '10px 12px', marginTop: 12 }}>
-          <div className="lab good"><I.Visto cor="#1e7d3a" />{r.tNew}</div>
+          <div className="lab good"><I.Visto cor="#0A7A43" />{r.tNew}</div>
           <div className="newp">
             <div className="im">{pecas[0].foto ? <img src={pecas[0].foto} alt="" /> : 'sem foto'}</div>
             <div>
@@ -202,7 +204,7 @@ export function Orcamento({ r, qr }) {
 
       {pecas.length > 1 && (
         <div className="card" style={{ padding: '10px 12px', marginTop: 12 }}>
-          <div className="lab good"><I.Visto cor="#1e7d3a" />{r.tNew}</div>
+          <div className="lab good"><I.Visto cor="#0A7A43" />{r.tNew}</div>
           <div className="plist">
             {pecas.map((p, i) => (
               <div className="pr" key={i}>
