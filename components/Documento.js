@@ -4,7 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 import QRCode from 'qrcode';
 import * as I from './Icones';
-import { brl, fdate, numero, itensDoOrcamento, totalDoOrcamento, linhas, pecasDe, qtdDe, subtotalDe } from '@/lib/format';
+import { brl, fdate, numero, itensDoOrcamento, totalDoOrcamento, linhas, itens, paragrafos, pecasDe, qtdDe, subtotalDe } from '@/lib/format';
 
 /* QR que abre conversa no WhatsApp da empresa */
 export function useQR(zap, site) {
@@ -103,12 +103,12 @@ export function Laudo({ r, qr }) {
       </div>
 
       <Secao icone={<I.Balao />}>3. Reclamação informada</Secao>
-      <div className="box">{r.recl}</div>
+      <div className="box">{paragrafos(r.recl)}</div>
 
       <div className="cols">
         <div>
           <Secao icone={<I.Prancheta />}>4. Procedimentos e testes executados</Secao>
-          <ul className="proc">{linhas(r.proc).map((p, i) => <li key={i}>{p}</li>)}</ul>
+          <ul className="proc">{itens(r.proc).map((p, i) => <li key={i}>{p}</li>)}</ul>
         </div>
         <div>
           <Secao icone={<I.Pulso />}>5. Resultados obtidos</Secao>
@@ -124,11 +124,11 @@ export function Laudo({ r, qr }) {
       </div>
 
       <Secao icone={<I.Lupa />}>6. Diagnóstico técnico</Secao>
-      <div className="box">{r.diag}</div>
+      <div className="box">{paragrafos(r.diag)}</div>
 
       <Secao icone={<I.Visto />}>7. Conclusão</Secao>
       <div className="concl">
-        <div className="box">{r.concl}</div>
+        <div className="box">{paragrafos(r.concl)}</div>
         <div className={'stat' + (aprovado ? ' ok' : '')}>
           <div className="t">STATUS</div>
           <div className="v">{aprovado ? <I.Visto cor="#1e7d3a" /> : <I.Xis />}{aprovado ? 'APROVADO' : 'REPROVADO'}</div>
@@ -224,7 +224,7 @@ export function Orcamento({ r, qr }) {
         <div className="card small">
           <div className="gp">
             <div className="t"><I.Escudo />Garantia</div>
-            <ul>{linhas(r.gar).map((g, i) => <li key={i}>{g}</li>)}</ul>
+            <ul>{itens(r.gar).map((g, i) => <li key={i}>{g}</li>)}</ul>
             {r.garObs && <div className="note">{r.garObs}</div>}
           </div>
         </div>

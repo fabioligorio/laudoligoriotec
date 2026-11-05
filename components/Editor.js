@@ -244,7 +244,7 @@ export default function Editor({ inicial }) {
                 </fieldset>
                 <fieldset>
                   <legend>4. Procedimentos executados</legend>
-                  <Area id="proc" dica="Um procedimento por linha" valor={r.proc} linhas={5} onChange={(v) => set('proc', v)} />
+                  <Area id="proc" dica="Termine cada item com ponto final ou comece com letra maiúscula" valor={r.proc} linhas={5} onChange={(v) => set('proc', v)} />
                 </fieldset>
                 <fieldset>
                   <legend>5. Resultados obtidos</legend>
@@ -315,7 +315,7 @@ export default function Editor({ inicial }) {
                 </fieldset>
                 <fieldset>
                   <legend>Garantia</legend>
-                  <Area id="gar" dica="Uma linha por item" valor={r.gar} linhas={2} onChange={(v) => set('gar', v)} />
+                  <Area id="gar" dica="Termine cada item com ponto final" valor={r.gar} linhas={2} onChange={(v) => set('gar', v)} />
                   <Texto id="garObs" rotulo="Observação" valor={r.garObs} onChange={(v) => set('garObs', v)} />
                 </fieldset>
                 <fieldset>
