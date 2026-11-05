@@ -143,7 +143,7 @@ export function Laudo({ r, qr }) {
 }
 
 export function Orcamento({ r, qr }) {
-  const itens = itensDoOrcamento(r);
+  const linhasOrc = itensDoOrcamento(r);
   const fotos = (r.defPhotos || []).filter(Boolean);
   const pecas = pecasDe(r).filter((p) => String(p.nome || '').trim());
   const gar = itens(r.gar);
@@ -220,7 +220,7 @@ export function Orcamento({ r, qr }) {
       <table className="it">
         <thead><tr><th>Item</th><th>Descrição</th><th>Valor (R$)</th></tr></thead>
         <tbody>
-          {itens.map((x, i) => <tr key={i}><td>{i + 1}</td><td>{x[0]}</td><td>{brl(x[1])}</td></tr>)}
+          {linhasOrc.map((x, i) => <tr key={i}><td>{i + 1}</td><td>{x[0]}</td><td>{brl(x[1])}</td></tr>)}
         </tbody>
       </table>
       <div className="tot"><div>Total geral</div><div>R$ {brl(totalDoOrcamento(r))}</div></div>
