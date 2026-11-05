@@ -36,7 +36,7 @@ export default function ModeloEditor({ inicial }) {
 
       <div className="modelo">
         <p className="hint" style={{ fontSize: 14 }}>
-          Tudo o que está aqui já vem preenchido em cada relatório novo. Relatórios que já existem não mudam.
+          Técnico, site, WhatsApp, desenho e títulos entram sozinhos em todo relatório novo. Os outros textos só entram quando você clica em Preencher com o modelo dentro do relatório. Relatórios que já existem não mudam.
         </p>
 
         <section className="bloco">

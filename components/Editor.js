@@ -7,6 +7,7 @@ import { Texto, Area, Linhas, Foto } from './Campos';
 import { OPCOES_DESENHO } from './Icones';
 import { autoNum, numero, pecasDe } from '@/lib/format';
 import { STATUS, ORDEM_STATUS, rotuloStatus } from '@/lib/status';
+import { aplicarModelo } from '@/lib/defaults';
 
 async function api(url, opts) {
   const res = await fetch(url, {
@@ -146,6 +147,17 @@ export default function Editor({ inicial }) {
       </div>
     );
   }
+  async function preencherComModelo() {
+    try {
+      const modelo = await api('/api/modelo');
+      sujo.current = true;
+      setR((p) => aplicarModelo(p, modelo));
+      setEstado({ tipo: 'pendente', msg: '' });
+    } catch (e) {
+      setEstado({ tipo: 'erro', msg: e.message });
+    }
+  }
+
   async function duplicar() {
     try {
       const j = await api('/api/relatorios', { method: 'POST', body: JSON.stringify({ duplicarDe: r.id }) });
@@ -193,6 +205,14 @@ export default function Editor({ inicial }) {
             <p className="aviso">
               Preencha o laudo e o orçamento e clique em <b>Salvar</b>, no fim do formulário. Depois de mandar ao cliente, marque <b>Aguardando autorização</b>. Quando o serviço terminar, marque <b>Concluído</b>.
             </p>
+          )}
+          {!travado && (
+            <div className="preencher">
+              <button type="button" className="add" id="preencher-modelo" onClick={preencherComModelo}>
+                Preencher com o modelo
+              </button>
+              <span className="hint">Completa só os campos vazios com os textos padrão (procedimentos, ensaios, serviços, garantia, pagamento).</span>
+            </div>
           )}
           <div className="tabs" role="tablist">
             {[['t1', 'Atendimento'], ['t2', 'Laudo'], ['t3', 'Orçamento']].map(([k, t]) => (
