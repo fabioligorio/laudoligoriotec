@@ -13,6 +13,7 @@ export default function Lista({ inicial }) {
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState('');
   const [armado, setArmado] = useState('');
+  const [importando, setImportando] = useState('');
 
   const visiveis = useMemo(() => {
     const q = busca.trim().toLowerCase();
@@ -53,6 +54,59 @@ export default function Lista({ inicial }) {
     setItens((l) => l.filter((r) => r.id !== id));
   }
 
+  // Lê o arquivo de backup e envia um relatório por vez
+  async function importar(e) {
+    const arquivo = e.target.files?.[0];
+    e.target.value = '';
+    if (!arquivo) return;
+    setErro('');
+    let dados;
+    try {
+      dados = JSON.parse(await arquivo.text());
+    } catch {
+      setErro('Esse arquivo não é um backup válido.');
+      return;
+    }
+    // aceita tanto o arquivo de backup quanto o .data/db.json do computador
+    const lista = Array.isArray(dados.relatorios) ? dados.relatorios : Object.values(dados.relatorios || {});
+    if (!lista.length && !dados.modelo) {
+      setErro('Nenhum relatório encontrado nesse arquivo.');
+      return;
+    }
+    const enviar = async (corpo) => {
+      const res = await fetch('/api/backup', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(corpo),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j.erro || 'Falha ao importar.');
+      return j.resultado;
+    };
+    const cont = { importado: 0, atualizado: 0, 'ja-existe': 0, falha: 0 };
+    try {
+      if (dados.modelo) await enviar({ modelo: dados.modelo });
+      for (let i = 0; i < lista.length; i++) {
+        setImportando(`Importando ${i + 1} de ${lista.length}…`);
+        try {
+          cont[await enviar({ relatorio: lista[i] })]++;
+        } catch {
+          cont.falha++;
+        }
+      }
+    } catch (err) {
+      setErro(err.message);
+    }
+    const partes = [
+      cont.importado && `${cont.importado} importado(s)`,
+      cont.atualizado && `${cont.atualizado} atualizado(s)`,
+      cont['ja-existe'] && `${cont['ja-existe']} já existia(m)`,
+      cont.falha && `${cont.falha} com falha`,
+    ].filter(Boolean);
+    setImportando(`Importação concluída: ${partes.join(', ') || 'nada novo'}. Atualizando a lista…`);
+    setTimeout(() => window.location.reload(), 1500);
+  }
+
   async function sair() {
     await fetch('/api/logout', { method: 'POST' });
     window.location.href = '/login';
@@ -68,6 +122,11 @@ export default function Lista({ inicial }) {
           <h1>Laudos e orçamentos</h1>
           <span className="sp" />
           <Link className="btn" href="/modelo">Editar modelo</Link>
+          <a className="btn" href="/api/backup" download title="Baixa um arquivo com todos os relatórios">Baixar backup</a>
+          <label className="btn" htmlFor="importar" title="Envia relatórios de um arquivo de backup ou do db.json do computador">
+            Importar backup
+            <input id="importar" type="file" accept="application/json,.json" onChange={importar} hidden />
+          </label>
           <button className="btn primary" type="button" onClick={() => criar()} disabled={ocupado}>+ Novo relatório</button>
           <button className="btn ghost" type="button" onClick={sair}>Sair</button>
         </div>
@@ -75,6 +134,7 @@ export default function Lista({ inicial }) {
 
       <div className="lista">
         {erro && <p className="estado erro" role="alert">{erro}</p>}
+        {importando && <p className="estado" role="status">{importando}</p>}
 
         {itens.length === 0 ? (
           <div className="vazio">

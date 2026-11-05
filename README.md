@@ -73,6 +73,13 @@ Daqui em diante, cada `git push` publica uma versão nova automaticamente.
 
 ---
 
+## Backup e mudança para a versão online
+
+- **Baixar backup** (na lista): baixa um arquivo `.json` com todos os relatórios, fotos e o modelo.
+- **Importar backup**: envia um arquivo de backup, ou o próprio `.data/db.json` do computador. Relatórios que já existem só são substituídos se o do arquivo for mais novo. Na versão online, as fotos são enviadas para o Vercel Blob durante a importação.
+
+Para levar o que você fez no computador para a versão online: abra a versão publicada, entre com a senha, clique em **Importar backup** e escolha `sistema\.data\db.json`.
+
 ## Rodar no seu computador
 
 Precisa do Node.js 18.18 ou mais novo. No Windows, abra o **Prompt de Comando** ou o **PowerShell**:
