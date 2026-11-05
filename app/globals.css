@@ -220,16 +220,30 @@ table.it td:last-child { text-align: center; width: 200px; font-variant-numeric:
 /* ============ Impressão / Salvar como PDF ============ */
 @page { size: A4; margin: 0; }
 @media print {
-  html, body { background: #fff !important; }
+  html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
   .no-print { display: none !important; }
-  .app { display: block; padding: 0; max-width: none; }
-  .main { display: block; }
-  .pages { display: block; }
+  .app, .main, .pages { display: block !important; padding: 0 !important; margin: 0 !important; max-width: none !important; gap: 0 !important; }
+  .folha { display: block !important; gap: 0 !important; max-width: none !important; }
   .sheet-wrap { width: auto; max-width: none; height: auto !important; box-shadow: none; overflow: visible; border-radius: 0; }
   .sheet-inner { transform: none !important; position: static; }
-  /* min-height: se o orçamento tiver muitos produtos, continua na página seguinte */
-  .page { width: 210mm; min-height: 296.5mm; }
-  .folha-O .page { break-before: page; }
+
+  /* Cada folha ocupa exatamente uma página A4.
+     --fit (calculado ao clicar em imprimir) reduz um pouco a folha quando o conteúdo passa de uma página,
+     para não sobrar um pedaço (borda, rodapé) numa página em branco. */
+  .page {
+    width: 210mm;
+    min-height: 0;
+    height: calc(296mm / var(--fit, 1));
+    zoom: var(--fit, 1);
+    overflow: hidden;
+    margin: 0 auto;
+    break-inside: avoid;
+  }
+  /* Conteúdo grande demais (muitos produtos): deixa continuar na página seguinte */
+  .page.longa { height: auto; overflow: visible; break-inside: auto; }
+
+  /* Quebra de página só entre o laudo e o orçamento, e só quando os dois são impressos */
+  body:not([data-imprimir="L"]):not([data-imprimir="O"]) .folha-O { break-before: page; }
   body[data-imprimir="L"] .folha-O, body[data-imprimir="O"] .folha-L { display: none !important; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
