@@ -26,7 +26,7 @@ export async function GET() {
 
 /* ---------- importação ---------- */
 
-const temBlob = () => !!process.env.BLOB_READ_WRITE_TOKEN;
+const temBlob = () => !!(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
 
 // Foto gravada dentro do relatório (uso local) vira arquivo no Vercel Blob
 async function subirFoto(src) {

@@ -15,7 +15,10 @@ export async function POST(req) {
   }
 
   // Sem Blob configurado (uso local): guarda a foto dentro do próprio relatório.
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  // Na Vercel, o Blob conectado cria BLOB_STORE_ID (login automático por OIDC);
+  // projetos antigos usam BLOB_READ_WRITE_TOKEN.
+  const temBlob = process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID;
+  if (!temBlob) {
     if (process.env.VERCEL) {
       return NextResponse.json(
         { erro: 'Armazenamento de fotos não configurado: conecte o Vercel Blob ao projeto.' },
