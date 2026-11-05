@@ -114,6 +114,7 @@ export default function Lista({ inicial }) {
                       <td>
                         <div className="acoes">
                           <Link className="btn" href={`/r/${r.id}`}>{r.status === 'concluido' ? 'Abrir' : 'Editar'}</Link>
+                          <a className="btn" href={`/r/${r.id}/imprimir`} target="_blank" rel="noopener" title="Abre o laudo e o orçamento prontos para salvar em PDF">PDF</a>
                           {r.status !== 'concluido' && (
                             <button className="btn warn" type="button" onClick={() => excluir(r.id)}>
                               {armado === r.id ? 'Confirmar' : 'Excluir'}

@@ -8,6 +8,7 @@ import { OPCOES_DESENHO } from './Icones';
 import { autoNum, numero, pecasDe } from '@/lib/format';
 import { STATUS, ORDEM_STATUS, rotuloStatus } from '@/lib/status';
 import { aplicarModelo } from '@/lib/defaults';
+import { imprimir } from '@/lib/impressao';
 
 async function api(url, opts) {
   const res = await fetch(url, {
@@ -165,29 +166,6 @@ export default function Editor({ inicial }) {
     } catch (e) {
       setEstado({ tipo: 'erro', msg: e.message });
     }
-  }
-  function imprimir(qual) {
-    const limpar = () => {
-      delete document.body.dataset.imprimir;
-      window.removeEventListener('afterprint', limpar);
-    };
-    // Mede cada folha: se o conteúdo passar de uma página A4 (1122 px), reduz um pouco para caber.
-    const LIMITE = 1116;
-    document.querySelectorAll('.page').forEach((p) => {
-      p.classList.remove('longa');
-      p.style.removeProperty('--fit');
-      // mede a altura real do conteúdo (sem a altura mínima da folha na tela)
-      p.style.minHeight = '0';
-      const altura = p.scrollHeight;
-      p.style.minHeight = '';
-      if (altura <= LIMITE) return;
-      const fit = LIMITE / altura;
-      if (fit >= 0.8) p.style.setProperty('--fit', fit.toFixed(4));
-      else { p.style.setProperty('--fit', '0.8'); p.classList.add('longa'); }
-    });
-    document.body.dataset.imprimir = qual;
-    window.addEventListener('afterprint', limpar);
-    window.print();
   }
 
   const textoEstado = {

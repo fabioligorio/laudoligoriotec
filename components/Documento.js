@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 import QRCode from 'qrcode';
+import { ajustarFolhas } from '@/lib/impressao';
 import * as I from './Icones';
 import { brl, fdate, numero, itensDoOrcamento, totalDoOrcamento, linhas, itens, paragrafos, pecasDe, qtdDe, subtotalDe } from '@/lib/format';
 
@@ -145,6 +146,10 @@ export function Orcamento({ r, qr }) {
   const itens = itensDoOrcamento(r);
   const fotos = (r.defPhotos || []).filter(Boolean);
   const pecas = pecasDe(r).filter((p) => String(p.nome || '').trim());
+  const gar = itens(r.gar);
+  const pag = itens(r.pag);
+  const temGar = gar.length > 0 || String(r.garObs || '').trim();
+  const temPag = pag.length > 0 || String(r.prazo || '').trim();
   return (
     <div className="page">
       <Cabecalho r={r} qr={qr} titulo="ORÇAMENTO" umaLinha rotNum="Nº do orçamento" rotData="Data do orçamento" />
@@ -220,23 +225,29 @@ export function Orcamento({ r, qr }) {
       </table>
       <div className="tot"><div>Total geral</div><div>R$ {brl(totalDoOrcamento(r))}</div></div>
 
-      <div className="pair" style={{ marginTop: 14 }}>
-        <div className="card small">
-          <div className="gp">
-            <div className="t"><I.Escudo />Garantia</div>
-            <ul>{itens(r.gar).map((g, i) => <li key={i}>{g}</li>)}</ul>
-            {r.garObs && <div className="note">{r.garObs}</div>}
-          </div>
+      {(temGar || temPag) && (
+        <div className="pair" style={{ marginTop: 14 }}>
+          {temGar ? (
+            <div className="card small">
+              <div className="gp">
+                <div className="t"><I.Escudo />Garantia</div>
+                {gar.length > 0 && <ul>{gar.map((g, i) => <li key={i}>{g}</li>)}</ul>}
+                {r.garObs && <div className="note">{r.garObs}</div>}
+              </div>
+            </div>
+          ) : <div />}
+          {temPag ? (
+            <div className="card small">
+              <div className="gp">
+                <div className="t"><I.Cartao />Condições de pagamento</div>
+                {pag.length > 0 && <ul>{pag.map((g, i) => <li key={i}>{g}</li>)}</ul>}
+                {pag.length > 0 && String(r.prazo || '').trim() && <div className="sepl" />}
+                {String(r.prazo || '').trim() && <div>Prazo de execução: {r.prazo}</div>}
+              </div>
+            </div>
+          ) : <div />}
         </div>
-        <div className="card small">
-          <div className="gp">
-            <div className="t"><I.Cartao />Condições de pagamento</div>
-            <ul><li>{r.pag}</li></ul>
-            <div className="sepl" />
-            <div>Prazo de execução: {r.prazo}</div>
-          </div>
-        </div>
-      </div>
+      )}
 
       <Assinaturas r={r} />
       <Rodape r={r} />
@@ -272,6 +283,11 @@ export function Escala({ children }) {
 
 export function Folhas({ r }) {
   const qr = useQR(r.zap, r.site);
+  // Ctrl+P também ajusta as folhas para caberem na página
+  useEffect(() => {
+    window.addEventListener('beforeprint', ajustarFolhas);
+    return () => window.removeEventListener('beforeprint', ajustarFolhas);
+  }, []);
   return (
     <div className="pages">
       <div className="folha folha-L" style={{ width: '100%', maxWidth: 794, display: 'flex', flexDirection: 'column', gap: 18 }}>
