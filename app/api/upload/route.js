@@ -26,9 +26,14 @@ export async function POST(req) {
     return NextResponse.json({ url: `data:image/jpeg;base64,${b64}` });
   }
 
-  const blob = await put(`fotos/${crypto.randomUUID()}.jpg`, foto, {
-    access: 'public',
-    contentType: 'image/jpeg',
-  });
-  return NextResponse.json({ url: blob.url });
+  try {
+    const blob = await put(`fotos/${crypto.randomUUID()}.jpg`, foto, {
+      access: 'public',
+      contentType: 'image/jpeg',
+    });
+    return NextResponse.json({ url: blob.url });
+  } catch (e) {
+    console.error('upload', e);
+    return NextResponse.json({ erro: 'Blob: ' + (e?.message || 'falha ao gravar a foto.') }, { status: 500 });
+  }
 }

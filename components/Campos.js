@@ -92,8 +92,8 @@ export function Foto({ id, src, onChange, bloqueado, rotulo = 'foto' }) {
       const fd = new FormData();
       fd.append('foto', blob, 'foto.jpg');
       const res = await fetch('/api/upload', { method: 'POST', body: fd });
-      const j = await res.json();
-      if (!res.ok) throw new Error(j.erro || 'Falha no envio.');
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j.erro || `Falha no envio (erro ${res.status}).`);
       onChange(j.url);
     } catch (err) {
       setErro(err.message || 'Falha no envio.');

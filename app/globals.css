@@ -263,3 +263,4 @@ fieldset.fim { border-top: 1px solid var(--line); padding-top: 16px; }
 .impressao { padding-inline: 16px; padding-bottom: 32px; }
 body[data-imprimir="L"] .impressao .folha-O, body[data-imprimir="O"] .impressao .folha-L { display: none; }
 @media print { .impressao { padding: 0 !important; } }
+.ph-erro { display: block; padding: 4px; font-size: 10px; line-height: 1.25; color: var(--danger); word-break: break-word; max-height: 100%; overflow: auto; }
