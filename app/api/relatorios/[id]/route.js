@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { lerRelatorio, gravarRelatorio, excluirRelatorio } from '@/lib/store';
+import { STATUS } from '@/lib/status';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,37 +21,44 @@ export async function GET(_req, { params }) {
   return NextResponse.json(r);
 }
 
-// body: { acao: 'salvar' | 'concluir' | 'reabrir', relatorio?: {...} }
+// body: { relatorio?: {...}, status?: 'rascunho' | 'aguardando' | 'concluido' }
+// - Sem status: só salva os campos.
+// - Com status: salva os campos e muda a situação.
+// - Concluído fica travado; para editar, envie status 'rascunho' ou 'aguardando' (reabrir).
 export async function PUT(req, { params }) {
   if (!idValido(params.id)) return NextResponse.json({ erro: 'Id inválido.' }, { status: 400 });
   const atual = await lerRelatorio(params.id);
   if (!atual) return NextResponse.json({ erro: 'Relatório não encontrado.' }, { status: 404 });
 
-  const { acao = 'salvar', relatorio = {} } = await req.json().catch(() => ({}));
-  const agora = new Date().toISOString();
-
-  if (acao === 'reabrir') {
-    const r = { ...atual, status: 'rascunho', concluidoEm: null, atualizadoEm: agora };
-    await gravarRelatorio(r);
-    return NextResponse.json(r);
+  const { relatorio = {}, status } = await req.json().catch(() => ({}));
+  if (status !== undefined && !STATUS[status]) {
+    return NextResponse.json({ erro: 'Situação inválida.' }, { status: 400 });
   }
+  const agora = new Date().toISOString();
+  const r = { ...atual, atualizadoEm: agora };
 
   if (atual.status === 'concluido') {
-    return NextResponse.json(
-      { erro: 'Este relatório já foi concluído. Reabra para editar.' },
-      { status: 409 }
-    );
+    // Reabrir: muda só a situação, ignora campos enviados
+    if (!status || status === 'concluido') {
+      return NextResponse.json(
+        { erro: 'Este relatório já foi concluído. Reabra para editar.' },
+        { status: 409 }
+      );
+    }
+  } else {
+    for (const k of EDITAVEIS) if (k in relatorio) r[k] = relatorio[k];
   }
 
-  const r = { ...atual, atualizadoEm: agora };
-  for (const k of EDITAVEIS) if (k in relatorio) r[k] = relatorio[k];
-
-  if (acao === 'concluir') {
-    if (!String(r.cliente || '').trim()) {
-      return NextResponse.json({ erro: 'Preencha o nome do cliente antes de concluir.' }, { status: 422 });
+  if (status) {
+    if (status !== 'rascunho' && !String(r.cliente || '').trim()) {
+      return NextResponse.json(
+        { erro: 'Preencha o nome do cliente antes de mudar a situação.' },
+        { status: 422 }
+      );
     }
-    r.status = 'concluido';
-    r.concluidoEm = agora;
+    r.status = status;
+    r.concluidoEm = status === 'concluido' ? agora : null;
+    if (status === 'aguardando' && atual.status !== 'aguardando') r.enviadoEm = agora;
   }
 
   try {

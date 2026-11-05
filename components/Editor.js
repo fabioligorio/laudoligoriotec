@@ -6,6 +6,7 @@ import { Folhas } from './Documento';
 import { Texto, Area, Linhas, Foto } from './Campos';
 import { OPCOES_DESENHO } from './Icones';
 import { autoNum, numero, pecasDe } from '@/lib/format';
+import { STATUS, ORDEM_STATUS, rotuloStatus } from '@/lib/status';
 
 async function api(url, opts) {
   const res = await fetch(url, {
@@ -48,21 +49,22 @@ export default function Editor({ inicial }) {
     setR((p) => ({ ...p, [k]: v }));
   }
 
-  async function salvar(acao = 'salvar') {
+  // status: undefined = só salvar; 'rascunho' | 'aguardando' | 'concluido' = salvar e mudar a situação
+  async function salvar(status, msgOk = '') {
     clearTimeout(timer.current);
     sujo.current = false;
     setEstado({ tipo: 'salvando', msg: '' });
     try {
       const j = await api(`/api/relatorios/${r.id}`, {
         method: 'PUT',
-        body: JSON.stringify({ acao, relatorio: rAtual.current }),
+        body: JSON.stringify({ status, relatorio: rAtual.current }),
       });
-      if (acao === 'salvar') {
+      if (!status) {
         setR((p) => ({ ...p, atualizadoEm: j.atualizadoEm }));
       } else {
         setR(j);
       }
-      setEstado({ tipo: sujo.current ? 'pendente' : 'salvo', msg: '' });
+      setEstado({ tipo: sujo.current ? 'pendente' : 'salvo', msg: msgOk });
       return true;
     } catch (e) {
       sujo.current = true;
@@ -75,7 +77,7 @@ export default function Editor({ inicial }) {
   useEffect(() => {
     if (!sujo.current || travado) return;
     clearTimeout(timer.current);
-    timer.current = setTimeout(() => salvar('salvar'), 1000);
+    timer.current = setTimeout(() => salvar(), 1500);
     return () => clearTimeout(timer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [r]);
@@ -100,11 +102,49 @@ export default function Editor({ inicial }) {
     acao();
   }
 
-  async function concluir() {
-    if (await salvar('concluir')) setEstado({ tipo: 'salvo', msg: 'Relatório concluído.' });
+  const MSG = {
+    rascunho: 'Salvo como rascunho.',
+    aguardando: 'Salvo. Aguardando autorização do cliente.',
+    concluido: 'Relatório concluído.',
+  };
+
+  // Troca de situação. Concluir e reabrir pedem um segundo clique.
+  function mudarSituacao(s) {
+    if (s === r.status) return;
+    const precisaConfirmar = s === 'concluido' || r.status === 'concluido';
+    const go = () => salvar(s, r.status === 'concluido' ? 'Relatório reaberto para edição.' : MSG[s]);
+    if (precisaConfirmar) confirmar('st-' + s, go);
+    else go();
   }
-  async function reabrir() {
-    if (await salvar('reabrir')) setEstado({ tipo: 'salvo', msg: 'Relatório reaberto para edição.' });
+
+  function acoes(id) {
+    const ocupado = estado.tipo === 'salvando';
+    return (
+      <div className="acoes-ed">
+        <div className="seg sit" role="group" aria-label="Situação do relatório">
+          {ORDEM_STATUS.map((s) => (
+            <button
+              key={s}
+              id={`${id}-st-${s}`}
+              type="button"
+              className={s}
+              aria-pressed={r.status === s}
+              disabled={ocupado}
+              onClick={() => mudarSituacao(s)}
+            >
+              {armado === 'st-' + s
+                ? (s === 'concluido' ? 'Confirmar conclusão' : 'Clique de novo para reabrir')
+                : STATUS[s].rotulo}
+            </button>
+          ))}
+        </div>
+        {!travado && (
+          <button id={`${id}-salvar`} className="btn primary grande" type="button" onClick={() => salvar(undefined, 'Salvo.')} disabled={ocupado}>
+            {ocupado ? 'Salvando…' : 'Salvar'}
+          </button>
+        )}
+      </div>
+    );
   }
   async function duplicar() {
     try {
@@ -137,7 +177,7 @@ export default function Editor({ inicial }) {
         <div className="topo-in">
           <Link href="/" className="btn ghost">← Relatórios</Link>
           <strong style={{ fontSize: 15 }}>{numero(r)}{r.cliente ? ` · ${r.cliente}` : ''}</strong>
-          <span className={`pill ${r.status}`}>{travado ? 'Concluído' : 'Rascunho'}</span>
+          <span className={`pill ${r.status}`}>{rotuloStatus(r.status)}</span>
           <span className="sp" />
           <span className={'estado' + (estado.tipo === 'erro' ? ' erro' : '')} role="status">{textoEstado}</span>
         </div>
@@ -147,10 +187,12 @@ export default function Editor({ inicial }) {
         <aside className="side no-print">
           {travado ? (
             <p className="aviso">
-              Concluído em {hora(r.concluidoEm)}. Para alterar, use <b>Reabrir para edição</b>. Para um atendimento parecido, use <b>Duplicar</b>.
+              Concluído em {hora(r.concluidoEm)}. Para alterar, escolha <b>Rascunho</b> ou <b>Aguardando autorização</b> no fim do formulário. Para um atendimento parecido, use <b>Duplicar</b>.
             </p>
           ) : (
-            <p className="aviso">As alterações são salvas sozinhas. Quando terminar, clique em <b>Concluir</b>.</p>
+            <p className="aviso">
+              Preencha o laudo e o orçamento e clique em <b>Salvar</b>, no fim do formulário. Depois de mandar ao cliente, marque <b>Aguardando autorização</b>. Quando o serviço terminar, marque <b>Concluído</b>.
+            </p>
           )}
           <div className="tabs" role="tablist">
             {[['t1', 'Atendimento'], ['t2', 'Laudo'], ['t3', 'Orçamento']].map(([k, t]) => (
@@ -283,6 +325,11 @@ export default function Editor({ inicial }) {
                 </fieldset>
               </div>
             </fieldset>
+            <fieldset className="fim">
+              <legend>Situação e salvamento</legend>
+              {acoes('form')}
+              <p className={'estado' + (estado.tipo === 'erro' ? ' erro' : '')}>{textoEstado}</p>
+            </fieldset>
           </div>
         </aside>
 
@@ -292,20 +339,11 @@ export default function Editor({ inicial }) {
             <button className="btn" type="button" onClick={() => imprimir('L')}>Só laudo</button>
             <button className="btn" type="button" onClick={() => imprimir('O')}>Só orçamento</button>
             <span className="sp" />
-            {travado ? (
-              <>
-                <button className="btn" type="button" onClick={duplicar}>Duplicar</button>
-                <button className="btn warn" type="button" onClick={() => confirmar('reabrir', reabrir)}>
-                  {armado === 'reabrir' ? 'Clique de novo para reabrir' : 'Reabrir para edição'}
-                </button>
-              </>
-            ) : (
-              <>
-                <button className="btn" type="button" onClick={() => salvar('salvar')} disabled={estado.tipo === 'salvando'}>Salvar agora</button>
-                <button className="btn ok" type="button" onClick={() => confirmar('concluir', concluir)} disabled={estado.tipo === 'salvando'}>
-                  {armado === 'concluir' ? 'Confirmar conclusão' : 'Concluir'}
-                </button>
-              </>
+            <button className="btn" type="button" onClick={duplicar}>Duplicar</button>
+            {!travado && (
+              <button className="btn primary" type="button" onClick={() => salvar(undefined, 'Salvo.')} disabled={estado.tipo === 'salvando'}>
+                Salvar
+              </button>
             )}
           </div>
           <Folhas r={r} />

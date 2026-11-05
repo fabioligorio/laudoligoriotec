@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { brl, fdate } from '@/lib/format';
+import { STATUS } from '@/lib/status';
 
 export default function Lista({ inicial }) {
   const router = useRouter();
@@ -88,7 +89,7 @@ export default function Lista({ inicial }) {
           <>
             <div className="filtros">
               <div className="chips" role="group" aria-label="Filtrar por situação">
-                {[['todos', 'Todos'], ['rascunho', 'Rascunhos'], ['concluido', 'Concluídos']].map(([k, t]) => (
+                {[['todos', 'Todos'], ['rascunho', 'Rascunhos'], ['aguardando', 'Aguardando autorização'], ['concluido', 'Concluídos']].map(([k, t]) => (
                   <button key={k} type="button" aria-pressed={filtro === k} onClick={() => setFiltro(k)}>
                     {t} ({contagem(k)})
                   </button>
@@ -109,11 +110,11 @@ export default function Lista({ inicial }) {
                       <td>{r.equip}</td>
                       <td className="num">{fdate(r.data)}</td>
                       <td className="num">R$ {brl(r.total)}</td>
-                      <td><span className={`pill ${r.status}`}>{r.status === 'concluido' ? 'Concluído' : 'Rascunho'}</span></td>
+                      <td><span className={`pill ${r.status}`}>{(STATUS[r.status] || STATUS.rascunho).curto}</span></td>
                       <td>
                         <div className="acoes">
                           <Link className="btn" href={`/r/${r.id}`}>{r.status === 'concluido' ? 'Abrir' : 'Editar'}</Link>
-                          {r.status === 'rascunho' && (
+                          {r.status !== 'concluido' && (
                             <button className="btn warn" type="button" onClick={() => excluir(r.id)}>
                               {armado === r.id ? 'Confirmar' : 'Excluir'}
                             </button>

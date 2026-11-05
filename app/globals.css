@@ -36,6 +36,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .pill { display: inline-block; font: 700 11px var(--f-ui); text-transform: uppercase; letter-spacing: .06em; padding: 3px 8px; border-radius: 99px; }
 .pill.rascunho { background: var(--soft); color: var(--warn); }
 .pill.concluido { background: var(--ok); color: #fff; }
+.pill.aguardando { background: var(--warn); color: #fff; }
+@media (prefers-color-scheme: dark) { .pill.aguardando { color: #1b1300; } }
 
 /* lista */
 .lista { max-width: 1100px; margin: 0 auto; padding: 20px 16px 40px; display: flex; flex-direction: column; gap: 14px; }
@@ -231,3 +233,14 @@ table.it td:last-child { text-align: center; width: 200px; font-variant-numeric:
   body[data-imprimir="L"] .folha-O, body[data-imprimir="O"] .folha-L { display: none !important; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* Situação e salvamento (fim do formulário) */
+fieldset.fim { border-top: 1px solid var(--line); padding-top: 16px; }
+.acoes-ed { display: flex; flex-direction: column; gap: 10px; }
+.seg.sit { display: grid; grid-template-columns: repeat(3, 1fr); }
+.seg.sit button { font-size: 12.5px; line-height: 1.2; padding: 10px 6px; border-left: 1px solid var(--line); }
+.seg.sit button:first-child { border-left: 0; }
+.seg.sit button[aria-pressed="true"].rascunho { background: var(--accent); color: var(--accent-fg); }
+.seg.sit button[aria-pressed="true"].aguardando { background: var(--warn); color: #fff; }
+.seg.sit button[aria-pressed="true"].concluido { background: var(--ok); color: #fff; }
+.btn.grande { justify-content: center; padding: 13px 16px; font-size: 15px; }
