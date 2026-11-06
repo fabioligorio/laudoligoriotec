@@ -32,6 +32,8 @@ export default function Editor({ inicial }) {
   const router = useRouter();
   const [r, setR] = useState(inicial);
   const [aba, setAba] = useState('t1');
+  // celular: mostra o formulário ou as folhas, um de cada vez
+  const [vista, setVista] = useState('form');
   const [estado, setEstado] = useState({ tipo: 'salvo', msg: '' });
   const [armado, setArmado] = useState('');
   const sujo = useRef(false);
@@ -180,7 +182,7 @@ export default function Editor({ inicial }) {
     <>
       <header className="topo no-print">
         <div className="topo-in">
-          <Link href="/" className="marca-link" aria-label="Voltar para os relatórios"><Logo escuro altura={30} /></Link>
+          <Link href="/" className="marca-link so-desktop" aria-label="Voltar para os relatórios"><Logo escuro altura={30} /></Link>
           <Link href="/" className="btn ghost">← Relatórios</Link>
           <strong style={{ fontSize: 15 }}>{numero(r)}{r.cliente ? ` · ${r.cliente}` : ''}</strong>
           <span className={`pill ${r.status}`}>{rotuloStatus(r.status)}</span>
@@ -189,7 +191,7 @@ export default function Editor({ inicial }) {
         </div>
       </header>
 
-      <div className="app">
+      <div className="app" data-vista={vista}>
         <aside className="side no-print">
           {travado ? (
             <p className="aviso">
@@ -363,6 +365,20 @@ export default function Editor({ inicial }) {
           <Folhas r={r} />
         </main>
       </div>
+      {/* celular: barra fixa embaixo */}
+      <nav className="so-mobile nav-baixo no-print" aria-label="Alternar entre formulário e folhas">
+        <div className="seg-nav">
+          <button type="button" aria-pressed={vista === 'form'} onClick={() => { setVista('form'); window.scrollTo(0, 0); }}>Formulário</button>
+          <button type="button" aria-pressed={vista === 'folhas'} onClick={() => { setVista('folhas'); window.scrollTo(0, 0); }}>Ver folhas</button>
+        </div>
+        {!travado ? (
+          <button className="btn primary" type="button" onClick={() => salvar(undefined, 'Salvo.')} disabled={estado.tipo === 'salvando'}>
+            {estado.tipo === 'salvando' ? 'Salvando…' : 'Salvar'}
+          </button>
+        ) : (
+          <button className="btn primary" type="button" onClick={() => imprimir('B')}>PDF</button>
+        )}
+      </nav>
     </>
   );
 }

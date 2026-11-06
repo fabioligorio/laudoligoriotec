@@ -122,16 +122,31 @@ export default function Lista({ inicial }) {
           <a className="marca-link" href="/" aria-label="LigorioTec, início"><Logo escuro altura={34} /></a>
           <span className="titulo">Sistema interno<b>Laudos e orçamentos</b></span>
           <span className="sp" />
-          <Link className="btn" href="/modelo">Editar modelo</Link>
-          <a className="btn" href="/api/backup" download title="Baixa um arquivo com todos os relatórios">Baixar backup</a>
-          <label className="btn" htmlFor="importar" title="Envia relatórios de um arquivo de backup ou do db.json do computador">
-            Importar backup
-            <input id="importar" type="file" accept="application/json,.json" onChange={importar} hidden />
-          </label>
-          <button className="btn primary" type="button" onClick={() => criar()} disabled={ocupado}>+ Novo relatório</button>
-          <button className="btn ghost" type="button" onClick={sair}>Sair</button>
+          <input id="importar" type="file" accept="application/json,.json" onChange={importar} hidden />
+          <div className="so-desktop acoes-topo">
+            <Link className="btn" href="/modelo">Editar modelo</Link>
+            <a className="btn" href="/api/backup" download title="Baixa um arquivo com todos os relatórios">Baixar backup</a>
+            <label className="btn" htmlFor="importar" title="Envia relatórios de um arquivo de backup ou do db.json do computador">Importar backup</label>
+            <button className="btn primary" type="button" onClick={() => criar()} disabled={ocupado}>+ Novo relatório</button>
+            <button className="btn ghost" type="button" onClick={sair}>Sair</button>
+          </div>
+          {/* celular: as ações secundárias ficam num menu */}
+          <details className="so-mobile menu">
+            <summary className="btn" aria-label="Mais opções">Menu</summary>
+            <div className="menu-itens">
+              <Link href="/modelo">Editar modelo</Link>
+              <a href="/api/backup" download>Baixar backup</a>
+              <label htmlFor="importar">Importar backup</label>
+              <button type="button" onClick={sair}>Sair</button>
+            </div>
+          </details>
         </div>
       </header>
+
+      {/* celular: botão flutuante para criar */}
+      <button className="so-mobile fab" type="button" onClick={() => criar()} disabled={ocupado} aria-label="Novo relatório">
+        <span aria-hidden="true">+</span> Novo
+      </button>
 
       <div className="lista">
         <div className="lista-titulo">
@@ -169,14 +184,14 @@ export default function Lista({ inicial }) {
                 </thead>
                 <tbody>
                   {visiveis.map((r) => (
-                    <tr key={r.id}>
-                      <td className="num">{r.num}</td>
-                      <td className="cli">{r.cliente || <em style={{ color: 'var(--muted)' }}>sem nome</em>}</td>
-                      <td>{r.equip}</td>
-                      <td className="num">{fdate(r.data)}</td>
-                      <td className="num">R$ {brl(r.total)}</td>
-                      <td><span className={`pill ${r.status}`}>{(STATUS[r.status] || STATUS.rascunho).curto}</span></td>
-                      <td>
+                    <tr key={r.id} className="linha">
+                      <td className="num c-num" data-rotulo="Nº">{r.num}</td>
+                      <td className="cli c-cli" data-rotulo="Cliente">{r.cliente || <em style={{ color: 'var(--muted)' }}>sem nome</em>}</td>
+                      <td className="c-equip" data-rotulo="Equipamento">{r.equip}</td>
+                      <td className="num c-data" data-rotulo="Data">{fdate(r.data)}</td>
+                      <td className="num c-total" data-rotulo="Total">R$ {brl(r.total)}</td>
+                      <td className="c-sit"><span className={`pill ${r.status}`}>{(STATUS[r.status] || STATUS.rascunho).curto}</span></td>
+                      <td className="c-acoes">
                         <div className="acoes">
                           <Link className="btn" href={`/r/${r.id}`}>{r.status === 'concluido' ? 'Abrir' : 'Editar'}</Link>
                           <a className="btn" href={`/r/${r.id}/imprimir`} target="_blank" rel="noopener" title="Abre o laudo e o orçamento prontos para salvar em PDF">PDF</a>
