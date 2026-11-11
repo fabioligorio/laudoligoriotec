@@ -12,6 +12,7 @@ const EDITAVEIS = [
   'tecnico', 'site', 'zap', 'recl', 'proc', 'res', 'diag', 'concl', 'resultado',
   'tDef', 'defPhotos', 'tNew', 'pecas', 'pecaItem', 'itens',
   'gar', 'garObs', 'pag', 'prazo',
+  'videos', 'msgCliente',
 ];
 
 export async function GET(_req, { params }) {
@@ -38,13 +39,14 @@ export async function PUT(req, { params }) {
   const r = { ...atual, atualizadoEm: agora };
 
   if (atual.status === 'concluido') {
-    // Reabrir: muda só a situação, ignora campos enviados
-    if (!status || status === 'concluido') {
-      return NextResponse.json(
-        { erro: 'Este relatório já foi concluído. Reabra para editar.' },
-        { status: 409 }
-      );
+    if (status === 'concluido') {
+      return NextResponse.json({ erro: 'Este relatório já foi concluído.' }, { status: 409 });
     }
+    if (!status) {
+      // Concluído continua travado, mas vídeos e a mensagem ao cliente podem mudar
+      for (const k of ['videos', 'msgCliente']) if (k in relatorio) r[k] = relatorio[k];
+    }
+    // Com status (reabrir): muda só a situação, ignora os outros campos enviados
   } else {
     for (const k of EDITAVEIS) if (k in relatorio) r[k] = relatorio[k];
   }

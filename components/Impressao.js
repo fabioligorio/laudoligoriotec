@@ -5,7 +5,7 @@ import { Folhas } from './Documento';
 import { imprimir, esperarCarregar } from '@/lib/impressao';
 import { numero } from '@/lib/format';
 
-export default function Impressao({ r, qual }) {
+export default function Impressao({ r, qual, voltar }) {
   const [pronto, setPronto] = useState(false);
 
   useEffect(() => {
@@ -25,8 +25,14 @@ export default function Impressao({ r, qual }) {
   return (
     <div className="impressao">
       <div className="bar no-print" style={{ maxWidth: 794, margin: '16px auto' }}>
-        <Link className="btn ghost" href="/">← Relatórios</Link>
-        <Link className="btn" href={`/r/${r.id}`}>Abrir no editor</Link>
+        {voltar ? (
+          <a className="btn ghost" href={voltar}>← Voltar</a>
+        ) : (
+          <>
+            <Link className="btn ghost" href="/">← Relatórios</Link>
+            <Link className="btn" href={`/r/${r.id}`}>Abrir no editor</Link>
+          </>
+        )}
         <span className="sp" />
         <span className="estado">{pronto ? 'Na janela de impressão, escolha "Salvar como PDF".' : 'Preparando…'}</span>
         <button className="btn primary" type="button" onClick={() => imprimir(qual)} disabled={!pronto}>Imprimir de novo</button>

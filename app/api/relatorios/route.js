@@ -28,6 +28,9 @@ export async function POST(req) {
         criadoEm: agora,
         atualizadoEm: agora,
         concluidoEm: null,
+        compartilhar: null,
+        videos: [],
+        msgCliente: '',
       };
     } else {
       r = novoRelatorio(await lerModelo());

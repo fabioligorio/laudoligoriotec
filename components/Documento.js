@@ -152,8 +152,10 @@ export function Orcamento({ r, qr }) {
   const pag = itens(r.pag);
   const temGar = gar.length > 0 || String(r.garObs || '').trim();
   const temPag = pag.length > 0 || String(r.prazo || '').trim();
+  // muitos itens: modo compacto (a impressão ainda reduz o que faltar para caber numa página)
+  const compacto = linhasOrc.length + pecas.length > 8 || pecas.length >= 4;
   return (
-    <div className="page">
+    <div className={'page' + (compacto ? ' compacto' : '')}>
       <Cabecalho r={r} qr={qr} titulo="ORÇAMENTO" umaLinha rotNum="Nº do orçamento" rotData="Data do orçamento" />
 
       <div className="pair">

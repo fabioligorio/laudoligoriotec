@@ -10,6 +10,7 @@ import { STATUS, ORDEM_STATUS, rotuloStatus } from '@/lib/status';
 import { aplicarModelo } from '@/lib/defaults';
 import { imprimir } from '@/lib/impressao';
 import { Logo } from './Marca';
+import AbaCliente from './AbaCliente';
 
 async function api(url, opts) {
   const res = await fetch(url, {
@@ -80,7 +81,8 @@ export default function Editor({ inicial }) {
 
   // Salva sozinho 1 segundo depois da última alteração
   useEffect(() => {
-    if (!sujo.current || travado) return;
+    // concluído também salva sozinho: o servidor só aceita vídeos e mensagem ao cliente
+    if (!sujo.current) return;
     clearTimeout(timer.current);
     timer.current = setTimeout(() => salvar(), 1500);
     return () => clearTimeout(timer.current);
@@ -211,7 +213,7 @@ export default function Editor({ inicial }) {
             </div>
           )}
           <div className="tabs" role="tablist">
-            {[['t1', 'Atendimento'], ['t2', 'Laudo'], ['t3', 'Orçamento']].map(([k, t]) => (
+            {[['t1', 'Atendimento'], ['t2', 'Laudo'], ['t3', 'Orçamento'], ['t4', 'Cliente']].map(([k, t]) => (
               <button key={k} id={`tab-${k}`} role="tab" aria-selected={aba === k} onClick={() => setAba(k)}>{t}</button>
             ))}
           </div>
@@ -341,6 +343,7 @@ export default function Editor({ inicial }) {
                 </fieldset>
               </div>
             </fieldset>
+            {aba === 't4' && <AbaCliente r={r} set={set} setR={setR} />}
             <fieldset className="fim">
               <legend>Situação e salvamento</legend>
               {acoes('form')}
