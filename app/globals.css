@@ -305,6 +305,7 @@ table.it td:last-child { text-align: center; width: 200px; font-variant-numeric:
 .video-item { display: grid; grid-template-columns: 120px 1fr 34px; gap: 10px; align-items: start; border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
 .video-item video, .video-item .video-link { width: 120px; aspect-ratio: 16 / 10; border-radius: 8px; background: var(--preto); object-fit: cover; display: grid; place-items: center; color: var(--verde); font: 600 12px var(--f-ui); }
 .video-item .campos { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.mover { align-self: flex-start; font: 500 12.5px var(--f-ui); color: var(--verde-fundo); background: none; border: 0; padding: 2px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .progresso { position: relative; height: 34px; border-radius: 10px; background: var(--nevoa); overflow: hidden; border: 1px solid var(--line); }
 .progresso div { position: absolute; inset: 0 auto 0 0; background: var(--verde); transition: width .3s; }
 .progresso span { position: relative; display: block; text-align: center; line-height: 32px; font: 500 13px var(--f-ui); }

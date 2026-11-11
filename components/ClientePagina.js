@@ -43,12 +43,27 @@ function Video({ v }) {
 
 const WHATSAPP_EMPRESA = '41936186432'; // (41) 93618-6432
 
+function Videos({ lista }) {
+  return (
+    <div className="cli-videos">
+      {lista.map((v, i) => (
+        <figure key={i}>
+          <div className="cli-video"><Video v={v} /></div>
+          {v.titulo && <figcaption>{v.titulo}</figcaption>}
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function ClientePagina({ r, token }) {
   const qr = useQR(r.zap, r.site);
   // WhatsApp oficial da LigorioTec (brandbook): recebe as aprovações e dúvidas dos clientes
   const zap = WHATSAPP_EMPRESA;
   const total = totalDoOrcamento(r);
   const videos = (r.videos || []).filter((v) => v.url);
+  const vDiag = videos.filter((v) => v.fase !== 'servico');
+  const vServ = videos.filter((v) => v.fase === 'servico');
   const num = numero(r);
 
   const msgAprovar = `Olá! Aprovo o orçamento nº ${num} (${r.equip || 'equipamento'}), no valor de R$ ${brl(total)}.`;
@@ -88,23 +103,17 @@ export default function ClientePagina({ r, token }) {
           </div>
 
           <nav className="cli-ancoras" aria-label="Ir para">
-            {videos.length > 0 && <a href="#videos">Vídeos</a>}
+            {vDiag.length > 0 && <a href="#videos-diagnostico">Vídeos do diagnóstico</a>}
             <a href="#laudo">Laudo técnico</a>
             <a href="#orcamento">Orçamento</a>
+            {vServ.length > 0 && <a href="#videos-servico">Serviço realizado</a>}
           </nav>
         </section>
 
-        {videos.length > 0 && (
-          <section id="videos" className="cli-sec">
-            <h2><span className="mk" />Vídeos do serviço</h2>
-            <div className="cli-videos">
-              {videos.map((v, i) => (
-                <figure key={i}>
-                  <div className="cli-video"><Video v={v} /></div>
-                  {v.titulo && <figcaption>{v.titulo}</figcaption>}
-                </figure>
-              ))}
-            </div>
+        {vDiag.length > 0 && (
+          <section id="videos-diagnostico" className="cli-sec">
+            <h2><span className="mk" />Vídeos do diagnóstico</h2>
+            <Videos lista={vDiag} />
           </section>
         )}
 
@@ -122,6 +131,12 @@ export default function ClientePagina({ r, token }) {
             </a>
           )}
         </section>
+        {vServ.length > 0 && (
+          <section id="videos-servico" className="cli-sec">
+            <h2><span className="mk" />Vídeos do serviço realizado</h2>
+            <Videos lista={vServ} />
+          </section>
+        )}
       </main>
 
       <footer className="cli-rodape">
