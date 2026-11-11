@@ -120,15 +120,6 @@ export default function AbaCliente({ r, set, setR }) {
       </fieldset>
 
       <fieldset>
-        <legend>Mensagem para o cliente</legend>
-        <label htmlFor="msgCliente">
-          <span>Aparece no topo da página do cliente <small>opcional</small></span>
-          <textarea id="msgCliente" rows={3} value={r.msgCliente || ''} onChange={(e) => set('msgCliente', e.target.value)}
-            placeholder="Ex.: Segue o diagnóstico do motor. Qualquer dúvida, é só chamar." />
-        </label>
-      </fieldset>
-
-      <fieldset>
         <legend>Vídeos do serviço</legend>
         {videos.map((v, i) => (
           <div className="video-item" key={i}>

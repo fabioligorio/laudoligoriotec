@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { Laudo, Orcamento, Escala, useQR } from './Documento';
 import { Logo } from './Marca';
 import { ajustarFolhas } from '@/lib/impressao';
-import { brl, fdate, numero, totalDoOrcamento, paragrafos } from '@/lib/format';
+import { brl, fdate, numero, totalDoOrcamento } from '@/lib/format';
 
 // Transforma links do YouTube em vídeo incorporado; outros links viram botão
 function embedYoutube(url) {
@@ -45,7 +45,6 @@ export default function ClientePagina({ r, token }) {
   const qr = useQR(r.zap, r.site);
   const zap = String(r.zap || '').replace(/\D/g, '');
   const total = totalDoOrcamento(r);
-  const aprovado = r.resultado === 'APROVADO';
   const videos = (r.videos || []).filter((v) => v.url);
   const num = numero(r);
 
@@ -75,19 +74,6 @@ export default function ClientePagina({ r, token }) {
             Aqui estão o diagnóstico{videos.length ? ', os vídeos' : ''} e o orçamento do seu <b>{r.equip || 'equipamento'}</b>,
             inspecionado em {fdate(r.data)}.
           </p>
-          {r.msgCliente && <p className="cli-msg">{paragrafos(r.msgCliente)}</p>}
-
-          <div className="cli-resumo">
-            <div>
-              <span>Resultado do laudo</span>
-              <b className={aprovado ? 'ok' : 'rep'}>{aprovado ? 'Aprovado' : 'Reprovado'}</b>
-            </div>
-            <div>
-              <span>Total do orçamento</span>
-              <b>R$ {brl(total)}</b>
-            </div>
-          </div>
-
           <div className="cli-acoes">
             {wa(msgAprovar) && (
               <a className="btn primary" href={wa(msgAprovar)} target="_blank" rel="noopener">Aprovar orçamento pelo WhatsApp</a>
