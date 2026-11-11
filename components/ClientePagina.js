@@ -41,9 +41,12 @@ function Video({ v }) {
   );
 }
 
+const WHATSAPP_EMPRESA = '41936186432'; // (41) 93618-6432
+
 export default function ClientePagina({ r, token }) {
   const qr = useQR(r.zap, r.site);
-  const zap = String(r.zap || '').replace(/\D/g, '');
+  // WhatsApp oficial da LigorioTec (brandbook): recebe as aprovações e dúvidas dos clientes
+  const zap = WHATSAPP_EMPRESA;
   const total = totalDoOrcamento(r);
   const videos = (r.videos || []).filter((v) => v.url);
   const num = numero(r);
