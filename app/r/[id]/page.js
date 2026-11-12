@@ -3,6 +3,8 @@ import Editor from '@/components/Editor';
 import { lerRelatorio } from '@/lib/store';
 
 export const dynamic = 'force-dynamic';
+// só as telas internas podem ser instaladas como app (a página do cliente abre direto no navegador)
+export const metadata = { manifest: '/manifest.webmanifest' };
 
 export default async function PaginaRelatorio({ params }) {
   if (!/^[\w-]{8,64}$/.test(params.id || '')) notFound();
