@@ -325,7 +325,7 @@ export default function Editor({ inicial }) {
                     <input id="pecaItem" type="checkbox" checked={!!r.pecaItem} onChange={(e) => set('pecaItem', e.target.checked)} />
                     Somar os produtos na tabela de serviços
                   </label>
-                  <p className="hint">Com mais de um produto, o bloco vira uma lista com foto pequena. Muitos produtos podem passar para uma terceira folha no PDF.</p>
+                  <p className="hint">Com mais de um produto, o bloco vira uma lista com foto pequena. Com muitos itens, a folha é reduzida para continuar em uma página só.</p>
                 </fieldset>
                 <fieldset>
                   <legend>Serviços</legend>

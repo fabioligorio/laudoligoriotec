@@ -373,7 +373,8 @@ table.it td:last-child { text-align: center; width: 200px; font-variant-numeric:
   .topo-in { padding: 10px 14px; gap: 10px; min-height: 56px; padding-top: max(10px, env(safe-area-inset-top)); }
   .topo .titulo { display: none; }
   .topo strong { font-size: 14px !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 46vw; }
-  .topo .estado { width: 100%; order: 9; font-size: 12px; }
+  .topo .estado { order: 9; margin-left: auto; font-size: 12px; }
+  .topo .pill { order: 8; }
 
   /* menu do topo */
   .menu { position: relative; margin-left: auto; }
@@ -426,8 +427,11 @@ table.it td:last-child { text-align: center; width: 200px; font-variant-numeric:
   .form { padding: 18px 14px 22px; overflow: visible; }
   .fotos { gap: 8px; }
   .ph .x { width: 28px; height: 28px; }
-  .li { grid-template-columns: 1fr 1fr 40px; }
-  .li.money { grid-template-columns: 1fr 100px 40px; }
+  /* linhas (ensaios e serviços): descrição em cima, valor/resultado + remover embaixo */
+  .linhas { gap: 12px; }
+  .li, .li.money { grid-template-columns: 1fr 44px; gap: 6px; padding-bottom: 12px; border-bottom: 1px solid var(--line-soft); }
+  .li > :first-child { grid-column: 1 / -1; }
+  .li .icon-btn { width: 44px; }
   .icon-btn { width: 40px; height: 44px; }
   .produto { grid-template-columns: 64px 1fr; padding: 10px; }
   .produto .linha { grid-template-columns: 64px 1fr 40px; }
@@ -446,6 +450,13 @@ table.it td:last-child { text-align: center; width: 200px; font-variant-numeric:
   .nav-baixo .seg-nav button[aria-pressed="true"] { background: #fff; color: var(--preto); font-weight: 600; }
   .nav-baixo .btn.primary { min-width: 92px; }
 
+  /* menos texto fixo no topo do formulário */
+  .side > .aviso, .preencher .hint { display: none; }
+  .preencher { margin-top: 14px; }
+  /* folhas: o Salvar já está na barra de baixo */
+  .main > .bar .btn.primary:last-child { display: none; }
+  .main > .bar .btn.primary:first-child { flex-basis: 100%; }
+  .cli-videos figure { width: min(100%, 320px); }
   /* modelo e impressão */
   .modelo { padding: 18px 12px 48px; }
   .modelo .bloco { padding: 16px 14px; }
