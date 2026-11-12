@@ -76,7 +76,7 @@ export default function ClientePagina({ r, token }) {
   }, []);
 
   return (
-    <div className="cli">
+    <div className="cli-pagina">
       <header className="cli-topo">
         <div className="cli-topo-in">
           <Logo escuro altura={32} />
