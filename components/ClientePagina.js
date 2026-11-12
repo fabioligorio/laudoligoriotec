@@ -127,7 +127,7 @@ export default function ClientePagina({ r, token }) {
           <Escala><Orcamento r={r} qr={qr} /></Escala>
           {wa(msgAprovar) && (
             <a className="btn primary cli-aprovar" href={wa(msgAprovar)} target="_blank" rel="noopener">
-              Aprovar orçamento de R$ {brl(total)} pelo WhatsApp
+              Aprovar orçamento pelo WhatsApp
             </a>
           )}
         </section>
