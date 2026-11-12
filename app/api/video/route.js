@@ -2,14 +2,14 @@
 // que a Vercel aceita numa requisição comum). Esta rota só gera a autorização de envio.
 import { NextResponse } from 'next/server';
 import { handleUpload } from '@vercel/blob/client';
-import { COOKIE, tokenDaSenha } from '@/lib/auth';
+import { COOKIE, sessaoValida } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 
 async function logado(req) {
   const senha = process.env.APP_PASSWORD;
   if (!senha) return process.env.NODE_ENV !== 'production';
-  return req.cookies.get(COOKIE)?.value === (await tokenDaSenha(senha));
+  return sessaoValida(req.cookies.get(COOKIE)?.value, senha);
 }
 
 export async function POST(req) {

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { lerRelatorio, gravarRelatorio, excluirRelatorio } from '@/lib/store';
 import { STATUS } from '@/lib/status';
+import { limparRelatorio } from '@/lib/seguranca';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,7 +32,9 @@ export async function PUT(req, { params }) {
   const atual = await lerRelatorio(params.id);
   if (!atual) return NextResponse.json({ erro: 'Relatório não encontrado.' }, { status: 404 });
 
-  const { relatorio = {}, status } = await req.json().catch(() => ({}));
+  const corpo = await req.json().catch(() => ({}));
+  const relatorio = corpo?.relatorio && typeof corpo.relatorio === 'object' ? corpo.relatorio : {};
+  const status = corpo?.status;
   if (status !== undefined && !STATUS[status]) {
     return NextResponse.json({ erro: 'Situação inválida.' }, { status: 400 });
   }
@@ -44,11 +47,11 @@ export async function PUT(req, { params }) {
     }
     if (!status) {
       // Concluído continua travado, mas vídeos e a mensagem ao cliente podem mudar
-      for (const k of ['videos', 'msgCliente']) if (k in relatorio) r[k] = relatorio[k];
+      Object.assign(r, limparRelatorio(relatorio, ['videos', 'msgCliente']));
     }
     // Com status (reabrir): muda só a situação, ignora os outros campos enviados
   } else {
-    for (const k of EDITAVEIS) if (k in relatorio) r[k] = relatorio[k];
+    Object.assign(r, limparRelatorio(relatorio, EDITAVEIS));
   }
 
   if (status) {

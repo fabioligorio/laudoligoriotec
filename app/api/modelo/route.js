@@ -14,7 +14,17 @@ export async function PUT(req) {
     return NextResponse.json({ erro: 'Dados inválidos.' }, { status: 400 });
   }
   const m = {};
-  for (const k of Object.keys(MODELO_PADRAO)) if (k in body) m[k] = body[k];
+  for (const k of Object.keys(MODELO_PADRAO)) {
+    if (!(k in body)) continue;
+    if (k === 'servicos') {
+      m[k] = (Array.isArray(body[k]) ? body[k] : []).slice(0, 60).map((p) => [
+        String((Array.isArray(p) ? p[0] : '') ?? '').slice(0, 300),
+        Number.isFinite(Number(p?.[1])) && p?.[1] !== '' ? Number(p[1]) : '',
+      ]);
+    } else {
+      m[k] = String(body[k] ?? '').slice(0, 5000);
+    }
+  }
   try {
     await gravarModelo({ ...MODELO_PADRAO, ...m });
   } catch (e) {

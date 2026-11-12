@@ -4,6 +4,7 @@ import { Laudo, Orcamento, Escala, useQR } from './Documento';
 import { Logo } from './Marca';
 import { ajustarFolhas } from '@/lib/impressao';
 import { brl, fdate, numero, totalDoOrcamento } from '@/lib/format';
+import { linkSeguro } from '@/lib/seguranca';
 
 // Transforma links do YouTube em vídeo incorporado; outros links viram botão
 function embedYoutube(url) {
@@ -61,7 +62,8 @@ export default function ClientePagina({ r, token }) {
   // WhatsApp oficial da LigorioTec (brandbook): recebe as aprovações e dúvidas dos clientes
   const zap = WHATSAPP_EMPRESA;
   const total = totalDoOrcamento(r);
-  const videos = (r.videos || []).filter((v) => v.url);
+  // só links https (o servidor já filtra; aqui é a segunda barreira)
+  const videos = (r.videos || []).map((v) => ({ ...v, url: linkSeguro(v.url) })).filter((v) => v.url);
   const vDiag = videos.filter((v) => v.fase !== 'servico');
   const vServ = videos.filter((v) => v.fase === 'servico');
   const num = numero(r);

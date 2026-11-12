@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
 import { todosRelatorios, lerRelatorio, gravarRelatorio, lerModelo, gravarModelo } from '@/lib/store';
 import { hojeISO } from '@/lib/defaults';
+import { limparRelatorio } from '@/lib/seguranca';
+import { STATUS } from '@/lib/status';
+
+const CAMPOS = [
+  'cliente', 'data', 'num', 'equip', 'comp', 'alim', 'icone', 'eqPhoto',
+  'tecnico', 'site', 'zap', 'recl', 'proc', 'res', 'diag', 'concl', 'resultado',
+  'tDef', 'defPhotos', 'tNew', 'pecas', 'pecaItem', 'itens',
+  'gar', 'garObs', 'pag', 'prazo', 'videos', 'msgCliente',
+  'peca', 'pecaV', 'newPhoto',
+];
+const dataISO = (v) => (typeof v === 'string' && !Number.isNaN(Date.parse(v)) ? v : null);
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -31,7 +42,7 @@ const temBlob = () => !!(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_S
 // Foto gravada dentro do relatório (uso local) vira arquivo no Vercel Blob
 async function subirFoto(src) {
   if (typeof src !== 'string' || !src.startsWith('data:image/') || !temBlob()) return src;
-  const m = src.match(/^data:(image\/[\w+.-]+);base64,(.+)$/);
+  const m = src.match(/^data:(image\/(?:jpeg|png|webp));base64,(.+)$/);
   if (!m) return src;
   const ext = m[1].includes('png') ? 'png' : 'jpg';
   const blob = await put(`fotos/${crypto.randomUUID()}.${ext}`, Buffer.from(m[2], 'base64'), {
@@ -75,7 +86,17 @@ export async function POST(req) {
     if (existente && String(existente.atualizadoEm) >= String(r.atualizadoEm)) {
       return NextResponse.json({ resultado: 'ja-existe' });
     }
-    await gravarRelatorio(await converterFotos(r));
+    // só os campos conhecidos, validados; links do cliente não vêm junto (gere de novo se precisar)
+    const limpo = {
+      id: r.id,
+      status: STATUS[r.status] ? r.status : 'rascunho',
+      criadoEm: dataISO(r.criadoEm) || new Date().toISOString(),
+      atualizadoEm: dataISO(r.atualizadoEm) || new Date().toISOString(),
+      concluidoEm: dataISO(r.concluidoEm),
+      compartilhar: null,
+      ...limparRelatorio(r, CAMPOS),
+    };
+    await gravarRelatorio(await converterFotos(limpo));
     return NextResponse.json({ resultado: existente ? 'atualizado' : 'importado' });
   } catch (e) {
     return NextResponse.json({ erro: e.message || 'Falha ao importar.' }, { status: 500 });
