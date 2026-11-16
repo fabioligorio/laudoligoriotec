@@ -10,9 +10,9 @@ import { comprimir } from './Campos';
 // Vídeos sem fase (criados antes desta separação) contam como diagnóstico
 export const faseDe = (v) => (['servico', 'sugestao'].includes(v.fase) ? v.fase : 'diagnostico');
 const FASES = [
-  ['diagnostico', 'Fotos e vídeos do diagnóstico', 'O defeito encontrado e os testes feitos. Aparecem antes do laudo.'],
-  ['servico', 'Fotos e vídeos do serviço realizado', 'O equipamento funcionando depois do conserto. Aparecem no fim da página.'],
-  ['sugestao', 'Sugestões e recomendações de melhoria', 'O que pode ser melhorado no equipamento ou na instalação. Aparece por último, em destaque vermelho.'],
+  ['diagnostico', 'Fotos e vídeos do diagnóstico', 'O defeito encontrado e os testes feitos. Aparecem antes do laudo.', 'Diagnóstico'],
+  ['servico', 'Fotos e vídeos do serviço realizado', 'O equipamento funcionando depois do conserto. Aparecem no fim da página.', 'Serviço realizado'],
+  ['sugestao', 'Sugestões e recomendações de melhoria', 'O que pode ser melhorado no equipamento ou na instalação. Aparece por último, em destaque vermelho.', 'Sugestões de melhoria'],
 ];
 
 export default function AbaCliente({ r, set, setR }) {
@@ -240,7 +240,7 @@ export default function AbaCliente({ r, set, setR }) {
                 )}
                 <label htmlFor={`vid-fase-${i}`}>Mostrar em
                   <select id={`vid-fase-${i}`} value={fase} onChange={(e) => mudar(i, 'fase', e.target.value)}>
-                    {FASES.map(([f, t]) => <option key={f} value={f}>{t}</option>)}
+                    {FASES.map(([f, , , curto]) => <option key={f} value={f}>{curto}</option>)}
                   </select>
                 </label>
               </div>
