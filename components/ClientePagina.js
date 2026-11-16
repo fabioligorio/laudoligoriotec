@@ -108,9 +108,6 @@ export default function ClientePagina({ r, token }) {
             inspecionado em {fdate(r.data)}.
           </p>
           <div className="cli-acoes">
-            {wa(msgAprovar) && (
-              <a className="btn primary" href={wa(msgAprovar)} target="_blank" rel="noopener">Aprovar orçamento pelo WhatsApp</a>
-            )}
             <a className="btn" href={`/c/${token}/imprimir`} target="_blank" rel="noopener">Baixar PDF</a>
             {nfUrl && (
               <a className="btn" href={nfBaixar} target="_blank" rel="noopener noreferrer">Baixar nota fiscal</a>
