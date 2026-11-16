@@ -366,7 +366,11 @@ table.it td:last-child { text-align: center; width: 200px; font-variant-numeric:
 .cli-nf { align-self: stretch; display: flex; align-items: center; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--raio); padding: 16px 18px; text-decoration: none; color: var(--fg); }
 .cli-nf:hover { border-color: var(--verde-fundo); }
 .cli-nf-ic { flex: none; width: 48px; height: 48px; border-radius: 12px; background: var(--verde); color: var(--preto); display: grid; place-items: center; font: 700 16px var(--f-disp); }
-.cli-nf b { display: block; font: 700 16px var(--f-disp); }
+.cli-nf > span:last-child { min-width: 0; flex: 1; }
+.cli-nf b { display: block; font: 700 16px var(--f-disp); overflow-wrap: anywhere; }
+/* nomes longos (arquivos, legendas, equipamento) quebram linha em vez de alargar a página */
+.cli-hero h1, .cli-sub, .cli-videos figcaption, .cli-sec h2, .video-item .campos a { overflow-wrap: anywhere; }
+.cli-sec, .cli-hero, .cli-main > * { min-width: 0; max-width: 100%; }
 .cli-nf small { color: var(--grafite); font-size: 13px; }
 
 /* Sugestões e recomendações de melhoria: destaque vermelho */
