@@ -8,10 +8,11 @@ import { comprimir } from './Campos';
 // As fotos e vídeos ficam no campo `videos`, com tipo 'foto' | 'arquivo' (vídeo enviado) | 'link'.
 // Funciona também com o relatório concluído.
 // Vídeos sem fase (criados antes desta separação) contam como diagnóstico
-export const faseDe = (v) => (v.fase === 'servico' ? 'servico' : 'diagnostico');
+export const faseDe = (v) => (['servico', 'sugestao'].includes(v.fase) ? v.fase : 'diagnostico');
 const FASES = [
   ['diagnostico', 'Fotos e vídeos do diagnóstico', 'O defeito encontrado e os testes feitos. Aparecem antes do laudo.'],
   ['servico', 'Fotos e vídeos do serviço realizado', 'O equipamento funcionando depois do conserto. Aparecem no fim da página.'],
+  ['sugestao', 'Sugestões e recomendações de melhoria', 'O que pode ser melhorado no equipamento ou na instalação. Aparece por último, em destaque vermelho.'],
 ];
 
 export default function AbaCliente({ r, set, setR }) {
@@ -216,7 +217,7 @@ export default function AbaCliente({ r, set, setR }) {
       </fieldset>
 
       {FASES.map(([fase, titulo, dica]) => (
-        <fieldset key={fase}>
+        <fieldset key={fase} className={fase === 'sugestao' ? 'fase-sugestao' : ''}>
           <legend>{titulo}</legend>
           <p className="hint">{dica}</p>
           {videos.map((v, i) => (faseDe(v) !== fase ? null : (
@@ -237,9 +238,11 @@ export default function AbaCliente({ r, set, setR }) {
                     <input id={`vid-url-${i}`} type="text" inputMode="url" value={v.url || ''} onChange={(e) => mudar(i, 'url', e.target.value.trim())} placeholder="https://" />
                   </label>
                 )}
-                <button type="button" className="mover" onClick={() => mudar(i, 'fase', fase === 'diagnostico' ? 'servico' : 'diagnostico')}>
-                  {fase === 'diagnostico' ? 'Mover para depois do serviço' : 'Mover para diagnóstico'}
-                </button>
+                <label htmlFor={`vid-fase-${i}`}>Mostrar em
+                  <select id={`vid-fase-${i}`} value={fase} onChange={(e) => mudar(i, 'fase', e.target.value)}>
+                    {FASES.map(([f, t]) => <option key={f} value={f}>{t}</option>)}
+                  </select>
+                </label>
               </div>
               <button type="button" className="icon-btn" aria-label={`Remover ${v.tipo === 'foto' ? 'foto' : 'vídeo'} ${i + 1}`} onClick={() => set('videos', videos.filter((_, k) => k !== i))}>×</button>
             </div>

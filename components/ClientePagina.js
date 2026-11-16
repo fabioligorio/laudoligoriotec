@@ -77,8 +77,9 @@ export default function ClientePagina({ r, token }) {
   // nota fiscal: arquivo no Vercel Blob (força o download) ou link da prefeitura/emissor
   const nfUrl = linkSeguro(r.notaFiscal?.url);
   const nfBaixar = nfUrl && r.notaFiscal?.tipo === 'arquivo' ? `${nfUrl}${nfUrl.includes('?') ? '&' : '?'}download=1` : nfUrl;
-  const vDiag = videos.filter((v) => v.fase !== 'servico');
+  const vDiag = videos.filter((v) => v.fase !== 'servico' && v.fase !== 'sugestao');
   const vServ = videos.filter((v) => v.fase === 'servico');
+  const vSug = videos.filter((v) => v.fase === 'sugestao');
   const num = numero(r);
 
   const msgAprovar = `Olá! Aprovo o orçamento nº ${num} (${r.equip || 'equipamento'}), no valor de R$ ${brl(total)}.`;
@@ -122,6 +123,7 @@ export default function ClientePagina({ r, token }) {
             <a href="#laudo">Laudo técnico</a>
             <a href="#orcamento">Orçamento</a>
             {vServ.length > 0 && <a href="#videos-servico">Serviço realizado</a>}
+            {vSug.length > 0 && <a href="#sugestoes" className="alerta">Sugestões de melhoria</a>}
             {nfUrl && <a href="#nota-fiscal">Nota fiscal</a>}
           </nav>
         </section>
@@ -151,6 +153,13 @@ export default function ClientePagina({ r, token }) {
           <section id="videos-servico" className="cli-sec">
             <h2><span className="mk" />Fotos e vídeos do serviço realizado</h2>
             <Videos lista={vServ} />
+          </section>
+        )}
+        {vSug.length > 0 && (
+          <section id="sugestoes" className="cli-sec cli-sugestoes">
+            <h2><span className="mk" />Sugestões e recomendações de melhoria</h2>
+            <p className="cli-sug-dica">Pontos que encontramos durante o serviço e que recomendamos melhorar.</p>
+            <Videos lista={vSug} />
           </section>
         )}
         {nfUrl && (

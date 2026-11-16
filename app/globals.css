@@ -369,6 +369,15 @@ table.it td:last-child { text-align: center; width: 200px; font-variant-numeric:
 .cli-nf b { display: block; font: 700 16px var(--f-disp); }
 .cli-nf small { color: var(--grafite); font-size: 13px; }
 
+/* Sugestões e recomendações de melhoria: destaque vermelho */
+.cli-sugestoes { background: #fdf1f1; border: 2px solid var(--danger); border-radius: var(--raio); padding: 18px 16px 20px; }
+.cli-sugestoes h2 { color: var(--danger); }
+.cli-sugestoes h2 .mk { background: var(--danger); }
+.cli-sug-dica { align-self: stretch; margin: -6px 0 0; color: #8f1d1d; font-size: 14.5px; line-height: 1.5; }
+.cli-ancoras a.alerta { color: var(--danger); font-weight: 600; }
+fieldset.fase-sugestao > legend { color: var(--danger); }
+fieldset.fase-sugestao > legend::before { background: var(--danger); }
+
 /* ============ Celular ============ */
 .so-mobile { display: none !important; }
 .acoes-topo { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
