@@ -57,7 +57,7 @@ export function Linhas({ id, linhas, onChange, dinheiro, phA, phB, rotuloAdd }) 
 }
 
 // Comprime a foto no navegador e envia para o servidor
-async function comprimir(arquivo) {
+export async function comprimir(arquivo) {
   const url = URL.createObjectURL(arquivo);
   try {
     const img = await new Promise((ok, erro) => {

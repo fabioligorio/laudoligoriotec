@@ -9,7 +9,7 @@ const CAMPOS = [
   'cliente', 'data', 'num', 'equip', 'comp', 'alim', 'icone', 'eqPhoto',
   'tecnico', 'site', 'zap', 'recl', 'proc', 'res', 'diag', 'concl', 'resultado',
   'tDef', 'defPhotos', 'tNew', 'pecas', 'pecaItem', 'itens',
-  'gar', 'garObs', 'pag', 'prazo', 'videos', 'msgCliente',
+  'gar', 'garObs', 'pag', 'prazo', 'videos', 'msgCliente', 'notaFiscal',
   'peca', 'pecaV', 'newPhoto',
 ];
 const dataISO = (v) => (typeof v === 'string' && !Number.isNaN(Date.parse(v)) ? v : null);

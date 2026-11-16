@@ -28,7 +28,11 @@ export async function POST(req) {
       onBeforeGenerateToken: async () => {
         if (!(await logado(req))) throw new Error('Sessão expirada. Entre de novo.');
         return {
-          allowedContentTypes: ['video/mp4', 'video/quicktime', 'video/webm', 'video/x-matroska', 'video/3gpp'],
+          allowedContentTypes: [
+            'video/mp4', 'video/quicktime', 'video/webm', 'video/x-matroska', 'video/3gpp',
+            // nota fiscal
+            'application/pdf', 'image/jpeg', 'image/png', 'image/webp',
+          ],
           maximumSizeInBytes: 300 * 1024 * 1024, // 300 MB por vídeo
           addRandomSuffix: true,
         };

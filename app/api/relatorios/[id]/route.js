@@ -13,7 +13,7 @@ const EDITAVEIS = [
   'tecnico', 'site', 'zap', 'recl', 'proc', 'res', 'diag', 'concl', 'resultado',
   'tDef', 'defPhotos', 'tNew', 'pecas', 'pecaItem', 'itens',
   'gar', 'garObs', 'pag', 'prazo',
-  'videos', 'msgCliente',
+  'videos', 'msgCliente', 'notaFiscal',
 ];
 
 export async function GET(_req, { params }) {
@@ -46,8 +46,8 @@ export async function PUT(req, { params }) {
       return NextResponse.json({ erro: 'Este relatório já foi concluído.' }, { status: 409 });
     }
     if (!status) {
-      // Concluído continua travado, mas vídeos e a mensagem ao cliente podem mudar
-      Object.assign(r, limparRelatorio(relatorio, ['videos', 'msgCliente']));
+      // Concluído continua travado, mas fotos/vídeos e a nota fiscal podem mudar
+      Object.assign(r, limparRelatorio(relatorio, ['videos', 'msgCliente', 'notaFiscal']));
     }
     // Com status (reabrir): muda só a situação, ignora os outros campos enviados
   } else {

@@ -303,7 +303,7 @@ table.it td:last-child { text-align: center; width: 200px; font-variant-numeric:
 .acoes-link { display: flex; flex-wrap: wrap; gap: 8px; }
 .acoes-link label.add { display: inline-flex; align-items: center; }
 .video-item { display: grid; grid-template-columns: 72px 1fr 34px; gap: 10px; align-items: start; border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
-.video-item video, .video-item .video-link { width: 72px; aspect-ratio: 9 / 16; border-radius: 8px; background: var(--preto); object-fit: cover; display: grid; place-items: center; color: var(--verde); font: 600 12px var(--f-ui); }
+.video-item img, .video-item video, .video-item .video-link { width: 72px; aspect-ratio: 9 / 16; border-radius: 8px; background: var(--preto); object-fit: cover; display: grid; place-items: center; color: var(--verde); font: 600 12px var(--f-ui); }
 .video-item .campos { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .mover { align-self: flex-start; font: 500 12.5px var(--f-ui); color: var(--verde-fundo); background: none; border: 0; padding: 2px 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .progresso { position: relative; height: 34px; border-radius: 10px; background: var(--nevoa); overflow: hidden; border: 1px solid var(--line); }
@@ -357,6 +357,17 @@ table.it td:last-child { text-align: center; width: 200px; font-variant-numeric:
   .cli-videos { grid-template-columns: minmax(0, 1fr); justify-items: center; }
   .cli-videos figure { width: min(100%, 360px); }
 }
+
+/* fotos na página do cliente: quadro 3:4, toque abre inteira */
+.cli-video.foto { aspect-ratio: 3 / 4; background: var(--nevoa); }
+.cli-foto { display: block; width: 100%; height: 100%; }
+.cli-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* nota fiscal */
+.cli-nf { align-self: stretch; display: flex; align-items: center; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--raio); padding: 16px 18px; text-decoration: none; color: var(--fg); }
+.cli-nf:hover { border-color: var(--verde-fundo); }
+.cli-nf-ic { flex: none; width: 48px; height: 48px; border-radius: 12px; background: var(--verde); color: var(--preto); display: grid; place-items: center; font: 700 16px var(--f-disp); }
+.cli-nf b { display: block; font: 700 16px var(--f-disp); }
+.cli-nf small { color: var(--grafite); font-size: 13px; }
 
 /* ============ Celular ============ */
 .so-mobile { display: none !important; }

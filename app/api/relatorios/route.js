@@ -31,6 +31,7 @@ export async function POST(req) {
         compartilhar: null,
         videos: [],
         msgCliente: '',
+        notaFiscal: null,
       };
     } else {
       r = novoRelatorio(await lerModelo());
