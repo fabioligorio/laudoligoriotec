@@ -385,6 +385,9 @@ fieldset.fase-sugestao > legend::before { background: var(--danger); }
 /* resumo dos concluídos na lista */
 .faturamento { background: var(--panel); border: 1px solid var(--line); border-radius: var(--raio); padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
 .fat-topo { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.fat-topo .olho { margin-right: auto; border: 1px solid var(--line); background: none; border-radius: 999px; padding: 5px 11px; font: 500 12.5px var(--f-ui); color: var(--grafite); cursor: pointer; }
+.fat-topo .olho:hover { color: var(--fg); border-color: var(--fg); }
+.fat-topo .olho[aria-pressed="true"] { background: var(--preto); color: #fff; border-color: var(--preto); }
 .fat-topo .chips button { padding: 5px 11px; font-size: 12.5px; }
 .fat-grade { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 10px; }
 .fat-grade > div { background: var(--nevoa); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }

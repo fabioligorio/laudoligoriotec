@@ -1,5 +1,5 @@
 'use client';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { brl, fdate } from '@/lib/format';
@@ -28,15 +28,20 @@ function noPeriodo(d, periodo) {
 }
 
 // Resumo do que já foi concluído, separando serviços e produtos
-function Faturamento({ itens }) {
+function Faturamento({ itens, oculto, alternar }) {
   const [periodo, setPeriodo] = useState('mes');
   const concl = itens.filter((r) => r.status === 'concluido' && noPeriodo(dataDoConcluido(r), periodo));
   const servicos = concl.reduce((a, r) => a + (r.servicos || 0), 0);
   const produtos = concl.reduce((a, r) => a + (r.produtos || 0), 0);
+  const v = (n) => (oculto ? 'R$ ••••' : `R$ ${brl(n)}`);
   return (
     <section className="faturamento" aria-label="Total dos serviços concluídos">
       <div className="fat-topo">
         <span className="marcador">Concluídos</span>
+        <button type="button" className="olho" onClick={alternar} aria-pressed={oculto}
+          title={oculto ? 'Mostrar os valores' : 'Ocultar os valores'}>
+          {oculto ? 'Mostrar valores' : 'Ocultar valores'}
+        </button>
         <div className="chips" role="group" aria-label="Período">
           {PERIODOS.map(([k, t]) => (
             <button key={k} type="button" aria-pressed={periodo === k} onClick={() => setPeriodo(k)}>{t}</button>
@@ -46,17 +51,17 @@ function Faturamento({ itens }) {
       <div className="fat-grade">
         <div className="fat-total">
           <span>Total</span>
-          <b>R$ {brl(servicos + produtos)}</b>
+          <b>{v(servicos + produtos)}</b>
           <small>{concl.length} {concl.length === 1 ? 'serviço concluído' : 'serviços concluídos'}</small>
         </div>
         <div>
           <span>Serviços</span>
-          <b>R$ {brl(servicos)}</b>
+          <b>{v(servicos)}</b>
           <small>mão de obra</small>
         </div>
         <div>
           <span>Produtos</span>
-          <b>R$ {brl(produtos)}</b>
+          <b>{v(produtos)}</b>
           <small>peças</small>
         </div>
       </div>
@@ -73,6 +78,17 @@ export default function Lista({ inicial }) {
   const [erro, setErro] = useState('');
   const [armado, setArmado] = useState('');
   const [importando, setImportando] = useState('');
+  // esconder os valores (lembra a escolha neste aparelho)
+  const [oculto, setOculto] = useState(false);
+  useEffect(() => {
+    try { setOculto(localStorage.getItem('lt_ocultar_valores') === '1'); } catch {}
+  }, []);
+  function alternarValores() {
+    setOculto((o) => {
+      try { localStorage.setItem('lt_ocultar_valores', o ? '0' : '1'); } catch {}
+      return !o;
+    });
+  }
 
   const visiveis = useMemo(() => {
     const q = busca.trim().toLowerCase();
@@ -211,7 +227,7 @@ export default function Lista({ inicial }) {
           <span className="marcador">Atendimentos</span>
           <h2>Diagnósticos e <em>orçamentos</em></h2>
         </div>
-        <Faturamento itens={itens} />
+        <Faturamento itens={itens} oculto={oculto} alternar={alternarValores} />
         {erro && <p className="estado erro" role="alert">{erro}</p>}
         {importando && <p className="estado" role="status">{importando}</p>}
 
@@ -248,7 +264,7 @@ export default function Lista({ inicial }) {
                       <td className="cli c-cli" data-rotulo="Cliente">{r.cliente || <em style={{ color: 'var(--muted)' }}>sem nome</em>}</td>
                       <td className="c-equip" data-rotulo="Equipamento">{r.equip}</td>
                       <td className="num c-data" data-rotulo="Data">{fdate(r.data)}</td>
-                      <td className="num c-total" data-rotulo="Total">R$ {brl(r.total)}</td>
+                      <td className="num c-total" data-rotulo="Total">{oculto ? 'R$ ••••' : `R$ ${brl(r.total)}`}</td>
                       <td className="c-sit"><span className={`pill ${r.status}`}>{(STATUS[r.status] || STATUS.rascunho).curto}</span></td>
                       <td className="c-acoes">
                         <div className="acoes">
