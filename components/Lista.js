@@ -1,73 +1,10 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { brl, fdate } from '@/lib/format';
 import { STATUS } from '@/lib/status';
 import { Logo } from './Marca';
-
-// Período de um relatório concluído: a data de conclusão (ou a data da inspeção, nos antigos)
-const dataDoConcluido = (r) => String(r.concluidoEm || r.data || '').slice(0, 10);
-const PERIODOS = [
-  ['mes', 'Este mês'],
-  ['passado', 'Mês passado'],
-  ['ano', 'Este ano'],
-  ['tudo', 'Tudo'],
-];
-function noPeriodo(d, periodo) {
-  if (periodo === 'tudo') return true;
-  if (!d) return false;
-  const hoje = new Date();
-  const ano = hoje.getFullYear();
-  const mes = hoje.getMonth() + 1;
-  const [y, m] = d.split('-').map(Number);
-  if (periodo === 'ano') return y === ano;
-  if (periodo === 'mes') return y === ano && m === mes;
-  const [ap, mp] = mes === 1 ? [ano - 1, 12] : [ano, mes - 1];
-  return y === ap && m === mp;
-}
-
-// Resumo do que já foi concluído, separando serviços e produtos
-function Faturamento({ itens, oculto, alternar }) {
-  const [periodo, setPeriodo] = useState('mes');
-  const concl = itens.filter((r) => r.status === 'concluido' && noPeriodo(dataDoConcluido(r), periodo));
-  const servicos = concl.reduce((a, r) => a + (r.servicos || 0), 0);
-  const produtos = concl.reduce((a, r) => a + (r.produtos || 0), 0);
-  const v = (n) => (oculto ? 'R$ ••••' : `R$ ${brl(n)}`);
-  return (
-    <section className="faturamento" aria-label="Total dos serviços concluídos">
-      <div className="fat-topo">
-        <span className="marcador">Concluídos</span>
-        <button type="button" className="olho" onClick={alternar} aria-pressed={oculto}
-          title={oculto ? 'Mostrar os valores' : 'Ocultar os valores'}>
-          {oculto ? 'Mostrar valores' : 'Ocultar valores'}
-        </button>
-        <div className="chips" role="group" aria-label="Período">
-          {PERIODOS.map(([k, t]) => (
-            <button key={k} type="button" aria-pressed={periodo === k} onClick={() => setPeriodo(k)}>{t}</button>
-          ))}
-        </div>
-      </div>
-      <div className="fat-grade">
-        <div className="fat-total">
-          <span>Total</span>
-          <b>{v(servicos + produtos)}</b>
-          <small>{concl.length} {concl.length === 1 ? 'serviço concluído' : 'serviços concluídos'}</small>
-        </div>
-        <div>
-          <span>Serviços</span>
-          <b>{v(servicos)}</b>
-          <small>mão de obra</small>
-        </div>
-        <div>
-          <span>Produtos</span>
-          <b>{v(produtos)}</b>
-          <small>peças</small>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 export default function Lista({ inicial }) {
   const router = useRouter();
@@ -78,17 +15,6 @@ export default function Lista({ inicial }) {
   const [erro, setErro] = useState('');
   const [armado, setArmado] = useState('');
   const [importando, setImportando] = useState('');
-  // esconder os valores (lembra a escolha neste aparelho)
-  const [oculto, setOculto] = useState(false);
-  useEffect(() => {
-    try { setOculto(localStorage.getItem('lt_ocultar_valores') === '1'); } catch {}
-  }, []);
-  function alternarValores() {
-    setOculto((o) => {
-      try { localStorage.setItem('lt_ocultar_valores', o ? '0' : '1'); } catch {}
-      return !o;
-    });
-  }
 
   const visiveis = useMemo(() => {
     const q = busca.trim().toLowerCase();
@@ -194,10 +120,11 @@ export default function Lista({ inicial }) {
       <header className="topo">
         <div className="topo-in">
           <a className="marca-link" href="/" aria-label="LigorioTec, início"><Logo escuro altura={34} /></a>
-          <span className="titulo">Sistema interno<b>Laudos e orçamentos</b></span>
+          <span className="titulo so-desktop">Sistema interno<b>Laudos e orçamentos</b></span>
           <span className="sp" />
           <input id="importar" type="file" accept="application/json,.json" onChange={importar} hidden />
           <div className="so-desktop acoes-topo">
+            <Link className="btn ghost" href="/">← Início</Link>
             <Link className="btn" href="/modelo">Editar modelo</Link>
             <a className="btn" href="/api/backup" download title="Baixa um arquivo com todos os relatórios">Baixar backup</a>
             <label className="btn" htmlFor="importar" title="Envia relatórios de um arquivo de backup ou do db.json do computador">Importar backup</label>
@@ -208,6 +135,8 @@ export default function Lista({ inicial }) {
           <details className="so-mobile menu">
             <summary className="btn" aria-label="Mais opções">Menu</summary>
             <div className="menu-itens">
+              <Link href="/">Início</Link>
+              <Link href="/financeiro">Financeiro</Link>
               <Link href="/modelo">Editar modelo</Link>
               <a href="/api/backup" download>Baixar backup</a>
               <label htmlFor="importar">Importar backup</label>
@@ -227,7 +156,6 @@ export default function Lista({ inicial }) {
           <span className="marcador">Atendimentos</span>
           <h2>Diagnósticos e <em>orçamentos</em></h2>
         </div>
-        <Faturamento itens={itens} oculto={oculto} alternar={alternarValores} />
         {erro && <p className="estado erro" role="alert">{erro}</p>}
         {importando && <p className="estado" role="status">{importando}</p>}
 

@@ -184,8 +184,8 @@ export default function Editor({ inicial }) {
     <>
       <header className="topo no-print">
         <div className="topo-in">
-          <Link href="/" className="marca-link so-desktop" aria-label="Voltar para os relatórios"><Logo escuro altura={30} /></Link>
-          <Link href="/" className="btn ghost">← Relatórios</Link>
+          <Link href="/laudos" className="marca-link so-desktop" aria-label="Voltar para os relatórios"><Logo escuro altura={30} /></Link>
+          <Link href="/laudos" className="btn ghost">← Relatórios</Link>
           <strong style={{ fontSize: 15 }}>{numero(r)}{r.cliente ? ` · ${r.cliente}` : ''}</strong>
           <span className={`pill ${r.status}`}>{rotuloStatus(r.status)}</span>
           <span className="sp" />

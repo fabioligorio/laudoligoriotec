@@ -29,7 +29,7 @@ export default function Impressao({ r, qual, voltar }) {
           <a className="btn ghost" href={voltar}>← Voltar</a>
         ) : (
           <>
-            <Link className="btn ghost" href="/">← Relatórios</Link>
+            <Link className="btn ghost" href="/laudos">← Relatórios</Link>
             <Link className="btn" href={`/r/${r.id}`}>Abrir no editor</Link>
           </>
         )}

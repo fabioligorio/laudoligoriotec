@@ -27,9 +27,9 @@ export default function ModeloEditor({ inicial }) {
     <>
       <header className="topo">
         <div className="topo-in">
-          <Link href="/" className="marca-link so-desktop" aria-label="Voltar para os relatórios"><Logo escuro altura={30} /></Link>
+          <Link href="/laudos" className="marca-link so-desktop" aria-label="Voltar para os relatórios"><Logo escuro altura={30} /></Link>
           <span className="titulo">Textos padrão<b>Modelo</b></span>
-          <Link href="/" className="btn ghost">← Relatórios</Link>
+          <Link href="/laudos" className="btn ghost">← Relatórios</Link>
           <span className="sp" />
           <span className={'estado' + (estado.tipo === 'erro' ? ' erro' : '')} role="status">{estado.msg}</span>
           <button className="btn primary" type="button" onClick={salvar} disabled={estado.tipo === 'salvando'}>Salvar modelo</button>
