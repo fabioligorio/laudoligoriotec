@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Laudo, Orcamento, Escala, useQR } from './Documento';
 import { Logo } from './Marca';
 import { ajustarFolhas } from '@/lib/impressao';
@@ -51,6 +51,41 @@ function Video({ v }) {
 }
 
 const WHATSAPP_EMPRESA = '41936186432'; // (41) 93618-6432
+// Chave PIX da LigorioTec: CNPJ
+const PIX_CHAVE = '24302178000155';
+const PIX_EXIBIR = '24.302.178/0001-55';
+
+function Pix({ total }) {
+  const [copiado, setCopiado] = useState(false);
+  async function copiar() {
+    try {
+      await navigator.clipboard.writeText(PIX_CHAVE);
+    } catch {
+      // navegadores antigos: copia por um campo escondido
+      const t = document.createElement('textarea');
+      t.value = PIX_CHAVE;
+      document.body.appendChild(t);
+      t.select();
+      try { document.execCommand('copy'); } catch {}
+      t.remove();
+    }
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2500);
+  }
+  return (
+    <div className="cli-pix">
+      <span className="cli-pix-ic" aria-hidden="true">PIX</span>
+      <div className="cli-pix-txt">
+        <small>Chave PIX · CNPJ</small>
+        <b>{PIX_EXIBIR}</b>
+        {total > 0 && <small>Valor do orçamento: <strong>R$ {brl(total)}</strong></small>}
+      </div>
+      <button type="button" className="btn primary cli-pix-btn" onClick={copiar} aria-live="polite">
+        {copiado ? 'Chave copiada ✓' : 'Copiar chave'}
+      </button>
+    </div>
+  );
+}
 
 function Videos({ lista }) {
   return (
@@ -124,6 +159,7 @@ export default function ClientePagina({ r, token }) {
             <a href="#orcamento">Orçamento</a>
             {vServ.length > 0 && <a href="#videos-servico">Serviço realizado</a>}
             {vSug.length > 0 && <a href="#sugestoes" className="alerta">Sugestões de melhoria</a>}
+            <a href="#pagamento">Pagamento (PIX)</a>
             {nfUrl && <a href="#nota-fiscal">Nota fiscal</a>}
           </nav>
         </section>
@@ -148,6 +184,12 @@ export default function ClientePagina({ r, token }) {
               Aprovar orçamento pelo WhatsApp
             </a>
           )}
+        </section>
+
+        <section id="pagamento" className="cli-sec">
+          <h2><span className="mk" />Pagamento</h2>
+          <p className="cli-pix-dica">Pague por PIX usando o CNPJ da LigorioTec como chave. Depois, envie o comprovante pelo WhatsApp.</p>
+          <Pix total={total} />
         </section>
         {vServ.length > 0 && (
           <section id="videos-servico" className="cli-sec">
