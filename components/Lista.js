@@ -264,7 +264,7 @@ export default function Lista({ inicial }) {
                       <td className="cli c-cli" data-rotulo="Cliente">{r.cliente || <em style={{ color: 'var(--muted)' }}>sem nome</em>}</td>
                       <td className="c-equip" data-rotulo="Equipamento">{r.equip}</td>
                       <td className="num c-data" data-rotulo="Data">{fdate(r.data)}</td>
-                      <td className="num c-total" data-rotulo="Total">{oculto ? 'R$ ••••' : `R$ ${brl(r.total)}`}</td>
+                      <td className="num c-total" data-rotulo="Total">R$ {brl(r.total)}</td>
                       <td className="c-sit"><span className={`pill ${r.status}`}>{(STATUS[r.status] || STATUS.rascunho).curto}</span></td>
                       <td className="c-acoes">
                         <div className="acoes">
