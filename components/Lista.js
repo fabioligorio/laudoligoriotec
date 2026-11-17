@@ -6,6 +6,64 @@ import { brl, fdate } from '@/lib/format';
 import { STATUS } from '@/lib/status';
 import { Logo } from './Marca';
 
+// Período de um relatório concluído: a data de conclusão (ou a data da inspeção, nos antigos)
+const dataDoConcluido = (r) => String(r.concluidoEm || r.data || '').slice(0, 10);
+const PERIODOS = [
+  ['mes', 'Este mês'],
+  ['passado', 'Mês passado'],
+  ['ano', 'Este ano'],
+  ['tudo', 'Tudo'],
+];
+function noPeriodo(d, periodo) {
+  if (periodo === 'tudo') return true;
+  if (!d) return false;
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = hoje.getMonth() + 1;
+  const [y, m] = d.split('-').map(Number);
+  if (periodo === 'ano') return y === ano;
+  if (periodo === 'mes') return y === ano && m === mes;
+  const [ap, mp] = mes === 1 ? [ano - 1, 12] : [ano, mes - 1];
+  return y === ap && m === mp;
+}
+
+// Resumo do que já foi concluído, separando serviços e produtos
+function Faturamento({ itens }) {
+  const [periodo, setPeriodo] = useState('mes');
+  const concl = itens.filter((r) => r.status === 'concluido' && noPeriodo(dataDoConcluido(r), periodo));
+  const servicos = concl.reduce((a, r) => a + (r.servicos || 0), 0);
+  const produtos = concl.reduce((a, r) => a + (r.produtos || 0), 0);
+  return (
+    <section className="faturamento" aria-label="Total dos serviços concluídos">
+      <div className="fat-topo">
+        <span className="marcador">Concluídos</span>
+        <div className="chips" role="group" aria-label="Período">
+          {PERIODOS.map(([k, t]) => (
+            <button key={k} type="button" aria-pressed={periodo === k} onClick={() => setPeriodo(k)}>{t}</button>
+          ))}
+        </div>
+      </div>
+      <div className="fat-grade">
+        <div className="fat-total">
+          <span>Total</span>
+          <b>R$ {brl(servicos + produtos)}</b>
+          <small>{concl.length} {concl.length === 1 ? 'serviço concluído' : 'serviços concluídos'}</small>
+        </div>
+        <div>
+          <span>Serviços</span>
+          <b>R$ {brl(servicos)}</b>
+          <small>mão de obra</small>
+        </div>
+        <div>
+          <span>Produtos</span>
+          <b>R$ {brl(produtos)}</b>
+          <small>peças</small>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Lista({ inicial }) {
   const router = useRouter();
   const [itens, setItens] = useState(inicial);
@@ -153,6 +211,7 @@ export default function Lista({ inicial }) {
           <span className="marcador">Atendimentos</span>
           <h2>Diagnósticos e <em>orçamentos</em></h2>
         </div>
+        <Faturamento itens={itens} />
         {erro && <p className="estado erro" role="alert">{erro}</p>}
         {importando && <p className="estado" role="status">{importando}</p>}
 
