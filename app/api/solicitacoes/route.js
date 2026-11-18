@@ -13,6 +13,10 @@ export async function POST(req) {
   const corpo = await req.json().catch(() => ({}));
   const { dados, erro } = validarVisita(corpo, true);
   if (erro) return NextResponse.json({ erro }, { status: 400 });
+  // o link do cliente mostra o dia e a hora para ele confirmar: os dois são obrigatórios
+  if (!dados.agendaDia || !dados.agendaHora) {
+    return NextResponse.json({ erro: 'Informe o dia e o horário da visita.' }, { status: 400 });
+  }
   const agora = new Date().toISOString();
   const v = {
     id: crypto.randomUUID(),

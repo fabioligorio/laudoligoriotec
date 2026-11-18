@@ -31,6 +31,7 @@ export default function VisitaEditor({ inicial, fechar, salvo }) {
 
   async function salvar(e) {
     e.preventDefault();
+    if (!editando && (!f.agendaDia || !f.agendaHora)) { setErro('Informe o dia e o horário da visita.'); return; }
     setSalvando(true);
     setErro('');
     try {
@@ -89,10 +90,11 @@ export default function VisitaEditor({ inicial, fechar, salvo }) {
         </fieldset>
 
         <fieldset>
-          <legend>Agendamento</legend>
+          <legend>Dia e horário da visita</legend>
+          <p className="hint">O cliente vê o dia e o horário no link e toca em <b>Confirmar visita</b>.</p>
           <div className="vis-linha">
-            <label>Dia<input type="date" value={f.agendaDia} onChange={set('agendaDia')} /></label>
-            <label>Horário<input type="time" value={f.agendaHora} onChange={set('agendaHora')} /></label>
+            <label>Dia *<input type="date" required value={f.agendaDia} onChange={set('agendaDia')} /></label>
+            <label>Horário *<input type="time" required value={f.agendaHora} onChange={set('agendaHora')} /></label>
           </div>
           <label><span>Valor da visita <span className="opc">(aparece para o cliente)</span></span>
             <input value={f.taxa} onChange={set('taxa')} maxLength={120} placeholder="Ex.: R$ 80,00, descontado se o serviço for aprovado" />
