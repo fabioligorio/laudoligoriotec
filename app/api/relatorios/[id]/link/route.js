@@ -11,6 +11,7 @@ const novoToken = () =>
 //  gerar: cria o link (ou reativa o atual)
 //  novo: troca o código (o link antigo para de funcionar)
 export async function POST(req, { params }) {
+  params = await params;
   const negado = await semLogin();
   if (negado) return negado;
   if (!/^[\w-]{8,64}$/.test(params.id || '')) return NextResponse.json({ erro: 'Id inválido.' }, { status: 400 });

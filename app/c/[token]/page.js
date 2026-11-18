@@ -7,6 +7,7 @@ import { paraCliente } from '@/lib/seguranca';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
+  params = await params;
   const r = await relatorioPorToken(params.token);
   return {
     title: r ? `Laudo e orçamento ${numero(r)} · LigorioTec` : 'Link indisponível · LigorioTec',
@@ -16,6 +17,7 @@ export async function generateMetadata({ params }) {
 
 // Página pública que o cliente abre pelo link (não pede senha)
 export default async function PaginaCliente({ params }) {
+  params = await params;
   const r = await relatorioPorToken(params.token);
   if (!r) {
     return (

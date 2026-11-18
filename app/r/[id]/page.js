@@ -8,6 +8,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = { manifest: '/manifest.webmanifest' };
 
 export default async function PaginaRelatorio({ params }) {
+  params = await params;
   await exigirLogin();
   if (!/^[\w-]{8,64}$/.test(params.id || '')) notFound();
   const r = await lerRelatorio(params.id);

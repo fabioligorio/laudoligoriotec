@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 
 // body: { status?, obs?, dados?: {...campos do formulário}, gerarLink?: true }
 export async function PUT(req, { params }) {
+  params = await params;
   const negado = await semLogin();
   if (negado) return negado;
   const v = await lerVisita(params.id);
@@ -35,6 +36,7 @@ export async function PUT(req, { params }) {
 }
 
 export async function DELETE(_req, { params }) {
+  params = await params;
   const negado = await semLogin();
   if (negado) return negado;
   const v = await lerVisita(params.id);

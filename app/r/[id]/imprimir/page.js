@@ -8,6 +8,8 @@ export const dynamic = 'force-dynamic';
 // Página só com as folhas: abre a janela de impressão sozinha.
 // ?so=L (só laudo) ou ?so=O (só orçamento)
 export default async function PaginaImpressao({ params, searchParams }) {
+  params = await params;
+  searchParams = await searchParams;
   await exigirLogin();
   if (!/^[\w-]{8,64}$/.test(params.id || '')) notFound();
   const r = await lerRelatorio(params.id);

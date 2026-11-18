@@ -18,6 +18,7 @@ const EDITAVEIS = [
 ];
 
 export async function GET(_req, { params }) {
+  params = await params;
   const negado = await semLogin();
   if (negado) return negado;
   if (!idValido(params.id)) return NextResponse.json({ erro: 'Id inválido.' }, { status: 400 });
@@ -31,6 +32,7 @@ export async function GET(_req, { params }) {
 // - Com status: salva os campos e muda a situação.
 // - Concluído fica travado; para editar, envie status 'rascunho' ou 'aguardando' (reabrir).
 export async function PUT(req, { params }) {
+  params = await params;
   const negado = await semLogin();
   if (negado) return negado;
   if (!idValido(params.id)) return NextResponse.json({ erro: 'Id inválido.' }, { status: 400 });
@@ -80,6 +82,7 @@ export async function PUT(req, { params }) {
 }
 
 export async function DELETE(_req, { params }) {
+  params = await params;
   const negado = await semLogin();
   if (negado) return negado;
   if (!idValido(params.id)) return NextResponse.json({ erro: 'Id inválido.' }, { status: 400 });

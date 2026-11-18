@@ -10,6 +10,7 @@ export const metadata = {
 
 // Página pública da visita, aberta pelo link que você manda ao cliente
 export default async function Pagina({ params }) {
+  params = await params;
   const v = await visitaPorToken(params.token);
   if (!v) {
     return (
