@@ -35,6 +35,7 @@ const nextConfig = {
       { source: '/:path*', headers: [...comuns, { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' }] },
       // páginas do cliente: o código secreto do link nunca vai junto para outros sites
       { source: '/c/:path*', headers: [{ key: 'Referrer-Policy', value: 'no-referrer' }, { key: 'X-Robots-Tag', value: 'noindex, nofollow' }] },
+      { source: '/visita/:token', headers: [{ key: 'Referrer-Policy', value: 'no-referrer' }, { key: 'X-Robots-Tag', value: 'noindex, nofollow' }] },
       // dados do sistema nunca ficam em cache compartilhado
       { source: '/api/:path*', headers: [{ key: 'Cache-Control', value: 'no-store' }] },
     ];

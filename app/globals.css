@@ -480,6 +480,34 @@ fieldset.fase-sugestao > legend::before { background: var(--danger); }
 .vis-rodape { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; padding-top: 10px; border-top: 1px solid var(--line-soft); }
 .vis-rodape label { display: flex; flex-direction: column; gap: 4px; font: 500 12.5px var(--f-ui); color: var(--grafite); }
 .vis-rodape select { font: 500 14px var(--f-ui); padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--fg); }
+.vis-nova { align-self: flex-start; }
+.vis-agenda { margin: 0; display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 10px; background: #fdf0dc; color: #8a4206; }
+.vis-agenda b { font: 700 15px var(--f-disp); color: var(--fg); }
+.vis-agenda span { font-size: 13px; }
+.vis-agenda.ok { background: var(--soft); color: var(--verde-fundo); }
+.vis-cli-link { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 1px dashed var(--line); border-radius: 12px; }
+.vis-cli-link > span { font: 600 11px var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--grafite); }
+.modal-grande { max-width: 640px; max-height: calc(100dvh - 32px); overflow-y: auto; gap: 12px; }
+.modal-grande fieldset { padding: 14px; }
+.modal-grande select { font: 400 16px var(--f-ui); padding: 12px 10px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--fg); width: 100%; }
+.modal-acoes { display: flex; justify-content: flex-end; gap: 8px; position: sticky; bottom: -20px; background: var(--panel); padding: 10px 0 0; }
+.modal-acoes .btn { min-height: 46px; }
+/* página da visita para o cliente */
+.vc-agenda { background: var(--preto); color: #fff; border-radius: var(--raio); padding: 20px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.vc-agenda.cancelada b { text-decoration: line-through; opacity: .6; }
+.vc-rot { font: 600 11px var(--f-ui); letter-spacing: .08em; text-transform: uppercase; color: var(--cinza-claro); }
+.vc-quando { font: 700 26px var(--f-disp); color: var(--verde); letter-spacing: -.01em; }
+.vc-selo { margin-top: 4px; font: 600 13px var(--f-ui); padding: 5px 10px; border-radius: 99px; background: #1a211e; color: var(--cinza-claro); }
+.vc-selo.ok { background: #0f2a1c; color: var(--verde); }
+.vc-selo.cancel { background: #3a1414; color: #ff8a80; }
+.vc-dados { background: var(--panel); border: 1px solid var(--line); border-radius: var(--raio); padding: 6px 18px; margin: 0; }
+.vc-dados div { padding: 12px 0; border-top: 1px solid var(--line-soft); display: flex; flex-direction: column; gap: 3px; }
+.vc-dados div:first-child { border-top: 0; }
+.vc-dados dt { font: 600 11px var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--grafite); }
+.vc-dados dd { margin: 0; font-size: 15.5px; overflow-wrap: anywhere; }
+.vc-dados dd.pre { white-space: pre-wrap; line-height: 1.5; }
+.vc-acoes { display: flex; flex-direction: column; gap: 10px; }
+.vc-acoes .btn { min-height: 50px; font-size: 15.5px; }
 .pill.cancelada { color: var(--grafite); background: var(--line-soft); text-decoration: line-through; }
 
 @media (min-width: 761px) and (max-width: 1000px) { .inicio-opcoes { grid-template-columns: 1fr 1fr; } }
@@ -555,6 +583,9 @@ a.fin-linha:hover { background: var(--nevoa); }
   .inicio-opcoes { grid-template-columns: 1fr; gap: 12px; }
   .modal-fundo { align-items: end; padding: 0; }
   .modal { border-radius: 20px 20px 0 0; padding: 20px 16px max(20px, env(safe-area-inset-bottom)); max-width: none; }
+  .modal-grande { max-height: 92dvh; }
+  .modal-acoes .btn { flex: 1; }
+  .vc-quando { font-size: 23px; }
   .vis-linha { grid-template-columns: 1fr; }
   .vis-form fieldset { padding: 14px; }
   .vis-cards { grid-template-columns: 1fr; }

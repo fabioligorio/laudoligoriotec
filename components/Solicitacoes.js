@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { fdate } from '@/lib/format';
-import { STATUS_VISITA, ORDEM_VISITA, zapDoCliente } from '@/lib/visitas';
+import { STATUS_VISITA, ORDEM_VISITA, zapDoCliente, textoAgenda } from '@/lib/visitas';
+import VisitaEditor from './VisitaEditor';
 import { Logo } from './Marca';
 import { EscolherTipo } from './Lista';
 
@@ -21,6 +22,29 @@ export default function Solicitacoes({ inicial }) {
   const [armado, setArmado] = useState('');
   const [criarDe, setCriarDe] = useState(null);
   const [ocupado, setOcupado] = useState(false);
+  const [editando, setEditando] = useState(null); // null = fechado, {} = nova, visita = editar
+  const [linkCopiado, setLinkCopiado] = useState('');
+
+  const linkDe = (v) => (v.token ? `${origem}/visita/${v.token}` : '');
+
+  async function copiarLinkCliente(v) {
+    try { await navigator.clipboard.writeText(linkDe(v)); setLinkCopiado(v.id); setTimeout(() => setLinkCopiado(''), 2500); }
+    catch { setErro(`Não deu para copiar. O link é ${linkDe(v)}`); }
+  }
+
+  function msgCliente(v) {
+    const ag = textoAgenda(v);
+    const nome = v.nome.split(' ')[0];
+    return ag
+      ? `Olá, ${nome}! Aqui é da LigorioTec. Sua visita técnica está marcada para ${ag}. Confira os dados e confirme por este link: ${linkDe(v)}`
+      : `Olá, ${nome}! Aqui é da LigorioTec. Este é o link da sua solicitação de visita técnica: ${linkDe(v)}`;
+  }
+
+  function salvo(v, nova) {
+    setLista((l) => (nova ? [v, ...l] : l.map((x) => (x.id === v.id ? v : x))));
+    setEditando(null);
+    if (nova) setFiltro('abertas');
+  }
 
   const [origem, setOrigem] = useState('');
   useEffect(() => setOrigem(window.location.origin), []);
@@ -87,6 +111,7 @@ export default function Solicitacoes({ inicial }) {
         </div>
       </header>
 
+      {editando && <VisitaEditor inicial={editando.id ? editando : null} fechar={() => setEditando(null)} salvo={salvo} />}
       <EscolherTipo aberto={!!criarDe} fechar={() => setCriarDe(null)} escolher={criar} ocupado={ocupado} />
 
       <main className="lista">
@@ -94,6 +119,7 @@ export default function Solicitacoes({ inicial }) {
           <span className="marcador">Visitas técnicas</span>
           <h2>Solicitações de <em>visita</em></h2>
         </div>
+        <button type="button" className="btn primary vis-nova" onClick={() => setEditando({})}>+ Nova solicitação</button>
 
         <div className="vis-link">
           <div>
@@ -135,16 +161,36 @@ export default function Solicitacoes({ inicial }) {
                   <h3>{v.nome}</h3>
                   <p className="vis-equip"><b>{v.equipamento}</b>{v.marca ? ` · ${v.marca}` : ''}</p>
                   <p className="vis-prob">{v.problema}</p>
+                  {v.agendaDia && (
+                    <p className={'vis-agenda' + (v.confirmadoEm ? ' ok' : '')}>
+                      <b>{textoAgenda(v)}</b>
+                      <span>{v.confirmadoEm ? `✓ Confirmada pelo cliente em ${quando(v.confirmadoEm)}` : 'Aguardando o cliente confirmar'}</span>
+                    </p>
+                  )}
                   <dl className="vis-dados">
                     <div><dt>WhatsApp</dt><dd>{v.whatsapp}</dd></div>
                     <div><dt>Endereço</dt><dd>{endereco}</dd></div>
-                    <div><dt>Preferência</dt><dd>{v.dia ? `${fdate(v.dia)}, ` : ''}{String(v.periodo || '').toLowerCase()}</dd></div>
+                    {v.origem !== 'interno' && <div><dt>Preferência</dt><dd>{v.dia ? `${fdate(v.dia)}, ` : ''}{String(v.periodo || '').toLowerCase()}</dd></div>}
+                    {v.taxa && <div><dt>Valor visita</dt><dd>{v.taxa}</dd></div>}
                   </dl>
                   <label className="vis-obs">Anotações
                     <textarea rows={2} defaultValue={v.obs} placeholder="Ex.: agendado para quinta às 14h" onBlur={(e) => e.target.value !== (v.obs || '') && mudar(v.id, { obs: e.target.value })} />
                   </label>
+                  <div className="vis-cli-link">
+                    <span>Link para o cliente</span>
+                    {v.token ? (
+                      <div className="vis-acoes">
+                        <button type="button" className="btn" onClick={() => copiarLinkCliente(v)}>{linkCopiado === v.id ? 'Copiado ✓' : 'Copiar link'}</button>
+                        {zap && <a className="btn ok" href={`${zap}?text=${encodeURIComponent(msgCliente(v))}`} target="_blank" rel="noopener">Enviar pelo WhatsApp</a>}
+                        <a className="btn ghost" href={`/visita/${v.token}`} target="_blank" rel="noopener">Ver</a>
+                      </div>
+                    ) : (
+                      <button type="button" className="btn" onClick={() => mudar(v.id, { gerarLink: true })}>Gerar link</button>
+                    )}
+                  </div>
                   <div className="vis-acoes">
-                    {zap && <a className="btn primary" href={`${zap}?text=${encodeURIComponent(`Olá, ${v.nome.split(' ')[0]}! Aqui é da LigorioTec, sobre a visita técnica que você pediu.`)}`} target="_blank" rel="noopener">WhatsApp</a>}
+                    <button type="button" className="btn" onClick={() => setEditando(v)}>Editar</button>
+                    {zap && <a className="btn" href={`${zap}?text=${encodeURIComponent(`Olá, ${v.nome.split(' ')[0]}! Aqui é da LigorioTec, sobre a visita técnica que você pediu.`)}`} target="_blank" rel="noopener">Conversar</a>}
                     {endereco && <a className="btn" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`} target="_blank" rel="noopener noreferrer">Mapa</a>}
                     {v.relatorioId ? (
                       <Link className="btn" href={`/r/${v.relatorioId}`}>Abrir atendimento</Link>
