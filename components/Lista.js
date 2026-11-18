@@ -1,10 +1,42 @@
 'use client';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { brl, fdate } from '@/lib/format';
-import { STATUS } from '@/lib/status';
+import { STATUS, TIPOS } from '@/lib/status';
 import { Logo } from './Marca';
+
+// Janela para escolher o tipo ao criar um atendimento novo
+export function EscolherTipo({ aberto, fechar, escolher, ocupado }) {
+  useEffect(() => {
+    if (!aberto) return;
+    const esc = (e) => e.key === 'Escape' && fechar();
+    window.addEventListener('keydown', esc);
+    return () => window.removeEventListener('keydown', esc);
+  }, [aberto, fechar]);
+  if (!aberto) return null;
+  return (
+    <div className="modal-fundo" onClick={fechar}>
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-tipo" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-topo">
+          <h3 id="titulo-tipo">Novo atendimento</h3>
+          <button type="button" className="icon-btn" aria-label="Fechar" onClick={fechar}>×</button>
+        </div>
+        <p className="hint">O que você vai enviar ao cliente?</p>
+        <div className="tipo-opcoes">
+          <button type="button" className="tipo-op" onClick={() => escolher('laudo')} disabled={ocupado} autoFocus>
+            <b>Laudo e orçamento</b>
+            <small>Diagnóstico técnico completo (página 1) e orçamento (página 2).</small>
+          </button>
+          <button type="button" className="tipo-op" onClick={() => escolher('orcamento')} disabled={ocupado}>
+            <b>Somente orçamento</b>
+            <small>Uma página só, com os serviços, as peças e os valores.</small>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Lista({ inicial }) {
   const router = useRouter();
@@ -15,6 +47,7 @@ export default function Lista({ inicial }) {
   const [erro, setErro] = useState('');
   const [armado, setArmado] = useState('');
   const [importando, setImportando] = useState('');
+  const [escolhendo, setEscolhendo] = useState(false);
 
   const visiveis = useMemo(() => {
     const q = busca.trim().toLowerCase();
@@ -128,7 +161,7 @@ export default function Lista({ inicial }) {
             <Link className="btn" href="/modelo">Editar modelo</Link>
             <a className="btn" href="/api/backup" download title="Baixa um arquivo com todos os relatórios">Baixar backup</a>
             <label className="btn" htmlFor="importar" title="Envia relatórios de um arquivo de backup ou do db.json do computador">Importar backup</label>
-            <button className="btn primary" type="button" onClick={() => criar()} disabled={ocupado}>+ Novo relatório</button>
+            <button className="btn primary" type="button" onClick={() => setEscolhendo(true)} disabled={ocupado}>+ Novo atendimento</button>
             <button className="btn ghost" type="button" onClick={sair}>Sair</button>
           </div>
           {/* celular: as ações secundárias ficam num menu */}
@@ -146,8 +179,10 @@ export default function Lista({ inicial }) {
         </div>
       </header>
 
+      <EscolherTipo aberto={escolhendo} fechar={() => setEscolhendo(false)} escolher={(tipo) => criar({ tipo })} ocupado={ocupado} />
+
       {/* celular: botão flutuante para criar */}
-      <button className="so-mobile fab" type="button" onClick={() => criar()} disabled={ocupado} aria-label="Novo relatório">
+      <button className="so-mobile fab" type="button" onClick={() => setEscolhendo(true)} disabled={ocupado} aria-label="Novo relatório">
         <span aria-hidden="true">+</span> Novo
       </button>
 
@@ -164,7 +199,7 @@ export default function Lista({ inicial }) {
             <strong>Nenhum relatório ainda</strong>
             <span>Crie o primeiro a partir do modelo, ou abra o atendimento da Júlia como exemplo.</span>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
-              <button className="btn primary" type="button" onClick={() => criar()} disabled={ocupado}>+ Novo relatório</button>
+              <button className="btn primary" type="button" onClick={() => setEscolhendo(true)} disabled={ocupado}>+ Novo relatório</button>
               <button className="btn" type="button" onClick={() => criar({ exemplo: true })} disabled={ocupado}>Abrir exemplo</button>
             </div>
           </div>
@@ -190,7 +225,10 @@ export default function Lista({ inicial }) {
                     <tr key={r.id} className="linha">
                       <td className="num c-num" data-rotulo="Nº">{r.num}</td>
                       <td className="cli c-cli" data-rotulo="Cliente">{r.cliente || <em style={{ color: 'var(--muted)' }}>sem nome</em>}</td>
-                      <td className="c-equip" data-rotulo="Equipamento">{r.equip}</td>
+                      <td className="c-equip" data-rotulo="Equipamento">
+                        {r.equip}
+                        {r.tipo === 'orcamento' && <span className="tag-tipo">{TIPOS.orcamento.curto}</span>}
+                      </td>
                       <td className="num c-data" data-rotulo="Data">{fdate(r.data)}</td>
                       <td className="num c-total" data-rotulo="Total">R$ {brl(r.total)}</td>
                       <td className="c-sit"><span className={`pill ${r.status}`}>{(STATUS[r.status] || STATUS.rascunho).curto}</span></td>

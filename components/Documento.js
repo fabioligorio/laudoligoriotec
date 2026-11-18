@@ -287,6 +287,7 @@ export function Escala({ children }) {
 
 export function Folhas({ r }) {
   const qr = useQR(r.zap, r.site);
+  const soOrc = r.tipo === 'orcamento';
   // Ctrl+P também ajusta as folhas para caberem na página
   useEffect(() => {
     window.addEventListener('beforeprint', ajustarFolhas);
@@ -294,12 +295,14 @@ export function Folhas({ r }) {
   }, []);
   return (
     <div className="pages">
-      <div className="folha folha-L" style={{ width: '100%', maxWidth: 794, display: 'flex', flexDirection: 'column', gap: 18 }}>
-        <p className="cap no-print">Página 1 · Laudo técnico</p>
-        <Escala><Laudo r={r} qr={qr} /></Escala>
-      </div>
+      {!soOrc && (
+        <div className="folha folha-L" style={{ width: '100%', maxWidth: 794, display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <p className="cap no-print">Página 1 · Laudo técnico</p>
+          <Escala><Laudo r={r} qr={qr} /></Escala>
+        </div>
+      )}
       <div className="folha folha-O" style={{ width: '100%', maxWidth: 794, display: 'flex', flexDirection: 'column', gap: 18 }}>
-        <p className="cap no-print">Página 2 · Orçamento</p>
+        <p className="cap no-print">{soOrc ? 'Orçamento' : 'Página 2 · Orçamento'}</p>
         <Escala><Orcamento r={r} qr={qr} /></Escala>
       </div>
     </div>

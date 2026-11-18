@@ -87,6 +87,9 @@ function Pix({ total }) {
   );
 }
 
+// "a, b e c"
+const juntar = (l) => (l.length < 2 ? l.join('') : `${l.slice(0, -1).join(', ')} e ${l[l.length - 1]}`);
+
 function Videos({ lista }) {
   return (
     <div className="cli-videos">
@@ -116,6 +119,13 @@ export default function ClientePagina({ r, token }) {
   const vServ = videos.filter((v) => v.fase === 'servico');
   const vSug = videos.filter((v) => v.fase === 'sugestao');
   const num = numero(r);
+  const soOrc = r.tipo === 'orcamento';
+  const partes = [
+    !soOrc && 'o diagnóstico',
+    videos.length > 0 && 'as fotos e vídeos',
+    nfUrl && 'a nota fiscal',
+    'o orçamento',
+  ].filter(Boolean);
 
   const msgAprovar = `Olá! Aprovo o orçamento nº ${num} (${r.equip || 'equipamento'}), no valor de R$ ${brl(total)}.`;
   const msgDuvida = `Olá! Tenho uma dúvida sobre o laudo/orçamento nº ${num}.`;
@@ -137,11 +147,11 @@ export default function ClientePagina({ r, token }) {
 
       <main className="cli-main">
         <section className="cli-hero">
-          <span className="marcador">Laudo e orçamento nº {num}</span>
+          <span className="marcador">{soOrc ? 'Orçamento' : 'Laudo e orçamento'} nº {num}</span>
           <h1>Olá{r.cliente ? `, ${r.cliente}` : ''}!</h1>
           <p className="cli-sub">
-            Aqui estão o diagnóstico{videos.length ? ', as fotos e vídeos' : ''}{nfUrl ? ', a nota fiscal' : ''} e o orçamento do seu <b>{r.equip || 'equipamento'}</b>,
-            inspecionado em {fdate(r.data)}.
+            Aqui {partes.length > 1 ? 'estão' : 'está'} {juntar(partes)} do seu <b>{r.equip || 'equipamento'}</b>,
+            {soOrc ? ' de' : ' inspecionado em'} {fdate(r.data)}.
           </p>
           <div className="cli-acoes">
             <a className="btn" href={`/c/${token}/imprimir`} target="_blank" rel="noopener">Baixar PDF</a>
@@ -155,7 +165,7 @@ export default function ClientePagina({ r, token }) {
 
           <nav className="cli-ancoras" aria-label="Ir para">
             {vDiag.length > 0 && <a href="#videos-diagnostico">Fotos e vídeos do diagnóstico</a>}
-            <a href="#laudo">Laudo técnico</a>
+            {!soOrc && <a href="#laudo">Laudo técnico</a>}
             <a href="#orcamento">Orçamento</a>
             {vServ.length > 0 && <a href="#videos-servico">Serviço realizado</a>}
             {vSug.length > 0 && <a href="#sugestoes" className="alerta">Sugestões de melhoria</a>}
@@ -171,10 +181,12 @@ export default function ClientePagina({ r, token }) {
           </section>
         )}
 
-        <section id="laudo" className="cli-sec folha-L">
-          <h2><span className="mk" />Laudo técnico</h2>
-          <Escala><Laudo r={r} qr={qr} /></Escala>
-        </section>
+        {!soOrc && (
+          <section id="laudo" className="cli-sec folha-L">
+            <h2><span className="mk" />Laudo técnico</h2>
+            <Escala><Laudo r={r} qr={qr} /></Escala>
+          </section>
+        )}
 
         <section id="orcamento" className="cli-sec folha-O">
           <h2><span className="mk" />Orçamento</h2>

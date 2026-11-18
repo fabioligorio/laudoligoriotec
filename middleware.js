@@ -36,7 +36,8 @@ export async function middleware(req) {
 }
 
 // Fica de fora (público): login, página e PDF do cliente (/c/...), arquivos do Next,
-// ícones e o envio de vídeos (que confere a sessão por conta própria).
+// ícones, o envio de vídeos (que confere a sessão por conta própria)
+// e o formulário público de solicitação de visita (/visita e /api/visita).
 export const config = {
-  matcher: ['/((?!login|api/login|api/video|c/|_next/|icon|apple-icon|favicon.ico|manifest.webmanifest|exemplo/).*)'],
+  matcher: ['/((?!login|api/login|api/video|api/visita|visita|c/|_next/|icon|apple-icon|favicon.ico|manifest.webmanifest|exemplo/).*)'],
 };

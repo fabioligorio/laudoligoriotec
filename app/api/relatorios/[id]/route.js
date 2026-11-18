@@ -9,7 +9,7 @@ const idValido = (id) => /^[\w-]{8,64}$/.test(id || '');
 
 // Campos que o editor pode alterar (o resto é controlado pelo servidor)
 const EDITAVEIS = [
-  'cliente', 'data', 'num', 'equip', 'comp', 'alim', 'icone', 'eqPhoto',
+  'tipo', 'cliente', 'data', 'num', 'equip', 'comp', 'alim', 'icone', 'eqPhoto',
   'tecnico', 'site', 'zap', 'recl', 'proc', 'res', 'diag', 'concl', 'resultado',
   'tDef', 'defPhotos', 'tNew', 'pecas', 'pecaItem', 'itens',
   'gar', 'garObs', 'pag', 'prazo',

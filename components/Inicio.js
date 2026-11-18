@@ -8,7 +8,7 @@ async function sair() {
 }
 
 // Página inicial depois do login: escolhe entre o Financeiro e os Laudos e orçamentos
-export default function Inicio({ aguardando = 0, rascunhos = 0, concluidos = 0 }) {
+export default function Inicio({ aguardando = 0, rascunhos = 0, concluidos = 0, visitasNovas = 0, visitasAbertas = 0 }) {
   return (
     <>
       <header className="topo">
@@ -52,6 +52,23 @@ export default function Inicio({ aguardando = 0, rascunhos = 0, concluidos = 0 }
             <span className="inicio-rodape">
               <span>
                 {aguardando > 0 ? `${aguardando} aguardando autorização` : rascunhos > 0 ? `${rascunhos} em rascunho` : 'Nenhum pendente'}
+              </span>
+              <span className="seta" aria-hidden="true">→</span>
+            </span>
+          </Link>
+
+          <Link href="/solicitacoes" className="inicio-card">
+            <span className="inicio-ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>
+              {visitasNovas > 0 && <span className="inicio-badge">{visitasNovas}</span>}
+            </span>
+            <span className="inicio-txt">
+              <b>Solicitações de visita</b>
+              <small>Pedidos de visita técnica de avaliação feitos pelos clientes no formulário.</small>
+            </span>
+            <span className="inicio-rodape">
+              <span>
+                {visitasNovas > 0 ? `${visitasNovas} ${visitasNovas === 1 ? 'nova' : 'novas'}` : visitasAbertas > 0 ? `${visitasAbertas} em aberto` : 'Nenhuma em aberto'}
               </span>
               <span className="seta" aria-hidden="true">→</span>
             </span>

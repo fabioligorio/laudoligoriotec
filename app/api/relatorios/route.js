@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { listarRelatorios, lerRelatorio, gravarRelatorio, lerModelo } from '@/lib/store';
+import { listarRelatorios, lerRelatorio, gravarRelatorio, lerModelo, lerVisita, gravarVisita } from '@/lib/store';
 import { novoRelatorio, relatorioExemplo, hojeISO } from '@/lib/defaults';
 
 export const dynamic = 'force-dynamic';
@@ -34,7 +34,20 @@ export async function POST(req) {
         notaFiscal: null,
       };
     } else {
-      r = novoRelatorio(await lerModelo());
+      r = novoRelatorio(await lerModelo(), body.tipo);
+      // a partir de uma solicitação de visita: já traz o cliente, o equipamento e o problema
+      if (body.deVisita) {
+        const v = await lerVisita(body.deVisita);
+        if (v) {
+          r.cliente = v.nome || '';
+          r.equip = [v.equipamento === 'Outro' ? '' : v.equipamento, v.marca].filter(Boolean).join(' ');
+          r.recl = v.problema || '';
+          r.visitaId = v.id;
+          await gravarRelatorio(r);
+          await gravarVisita({ ...v, relatorioId: r.id, status: v.status === 'nova' ? 'agendada' : v.status, atualizadoEm: new Date().toISOString() });
+          return NextResponse.json(r, { status: 201 });
+        }
+      }
     }
     await gravarRelatorio(r);
     return NextResponse.json(r, { status: 201 });

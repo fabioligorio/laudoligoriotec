@@ -10,7 +10,7 @@ export default function Impressao({ r, qual, voltar }) {
 
   useEffect(() => {
     let vivo = true;
-    document.title = `${qual === 'O' ? 'Orcamento' : qual === 'L' ? 'Laudo' : 'Laudo e Orcamento'} ${numero(r)} ${r.cliente || ''}`.trim();
+    document.title = `${qual === 'O' || r.tipo === 'orcamento' ? 'Orcamento' : qual === 'L' ? 'Laudo' : 'Laudo e Orcamento'} ${numero(r)} ${r.cliente || ''}`.trim();
     (async () => {
       await esperarCarregar();
       // um instante para o QR code e o layout assentarem

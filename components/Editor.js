@@ -43,6 +43,7 @@ export default function Editor({ inicial }) {
   rAtual.current = r;
 
   const travado = r.status === 'concluido';
+  const soOrc = r.tipo === 'orcamento';
   const pecas = pecasDe(r);
 
   function mudarPeca(i, campo, v) {
@@ -201,7 +202,7 @@ export default function Editor({ inicial }) {
             </p>
           ) : (
             <p className="aviso">
-              Preencha o laudo e o orçamento e clique em <b>Salvar</b>, no fim do formulário. Depois de mandar ao cliente, marque <b>Aguardando autorização</b>. Quando o serviço terminar, marque <b>Concluído</b>.
+              Preencha {soOrc ? 'o orçamento' : 'o laudo e o orçamento'} e clique em <b>Salvar</b>, no fim do formulário. Depois de mandar ao cliente, marque <b>Aguardando autorização</b>. Quando o serviço terminar, marque <b>Concluído</b>.
             </p>
           )}
           {!travado && (
@@ -213,7 +214,7 @@ export default function Editor({ inicial }) {
             </div>
           )}
           <div className="tabs" role="tablist">
-            {[['t1', 'Atendimento'], ['t2', 'Laudo'], ['t3', 'Orçamento'], ['t4', 'Cliente']].map(([k, t]) => (
+            {[['t1', 'Atendimento'], !soOrc && ['t2', 'Laudo'], ['t3', 'Orçamento'], ['t4', 'Cliente']].filter(Boolean).map(([k, t]) => (
               <button key={k} id={`tab-${k}`} role="tab" aria-selected={aba === k} onClick={() => setAba(k)}>{t}</button>
             ))}
           </div>
@@ -221,11 +222,19 @@ export default function Editor({ inicial }) {
             <fieldset className="trava" disabled={travado}>
               <div className="painel" hidden={aba !== 't1'}>
                 <fieldset>
+                  <legend>Tipo de atendimento</legend>
+                  <div className="seg seg-tipo">
+                    <button type="button" aria-pressed={!soOrc} onClick={() => set('tipo', 'laudo')}>Laudo e orçamento</button>
+                    <button type="button" aria-pressed={soOrc} onClick={() => { set('tipo', 'orcamento'); if (aba === 't2') setAba('t1'); }}>Somente orçamento</button>
+                  </div>
+                  {soOrc && <p className="hint">Só a folha do orçamento é impressa e enviada ao cliente. O que já estiver escrito no laudo fica guardado.</p>}
+                </fieldset>
+                <fieldset>
                   <legend>Cliente</legend>
                   <Texto id="cliente" rotulo="Nome do cliente" valor={r.cliente} onChange={(v) => set('cliente', v)} />
                   <div className="row">
-                    <Texto id="data" tipo="date" rotulo="Data da inspeção" valor={r.data} onChange={(v) => set('data', v)} />
-                    <Texto id="num" rotulo="Nº do laudo" dica="vazio = automático" placeholder={autoNum(r)} valor={r.num} onChange={(v) => set('num', v)} />
+                    <Texto id="data" tipo="date" rotulo={soOrc ? 'Data do orçamento' : 'Data da inspeção'} valor={r.data} onChange={(v) => set('data', v)} />
+                    <Texto id="num" rotulo={soOrc ? 'Nº do orçamento' : 'Nº do laudo'} dica="vazio = automático" placeholder={autoNum(r)} valor={r.num} onChange={(v) => set('num', v)} />
                   </div>
                 </fieldset>
                 <fieldset>
@@ -355,8 +364,12 @@ export default function Editor({ inicial }) {
         <main className="main">
           <div className="bar no-print">
             <button className="btn primary" type="button" onClick={() => imprimir('B')}>Salvar PDF / Imprimir</button>
-            <button className="btn" type="button" onClick={() => imprimir('L')}>Só laudo</button>
-            <button className="btn" type="button" onClick={() => imprimir('O')}>Só orçamento</button>
+            {!soOrc && (
+              <>
+                <button className="btn" type="button" onClick={() => imprimir('L')}>Só laudo</button>
+                <button className="btn" type="button" onClick={() => imprimir('O')}>Só orçamento</button>
+              </>
+            )}
             <span className="sp" />
             <button className="btn" type="button" onClick={duplicar}>Duplicar</button>
             {!travado && (
