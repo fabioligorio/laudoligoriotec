@@ -2,6 +2,7 @@ import ClientePagina from '@/components/ClientePagina';
 import { relatorioPorToken } from '@/lib/store';
 import { Logo } from '@/components/Marca';
 import { numero } from '@/lib/format';
+import { paraCliente } from '@/lib/seguranca';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,5 +30,5 @@ export default async function PaginaCliente({ params }) {
       </main>
     );
   }
-  return <ClientePagina r={r} token={params.token} />;
+  return <ClientePagina r={paraCliente(r)} token={params.token} />;
 }

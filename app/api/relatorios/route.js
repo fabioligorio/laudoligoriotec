@@ -1,15 +1,20 @@
 import { NextResponse } from 'next/server';
 import { listarRelatorios, lerRelatorio, gravarRelatorio, lerModelo, lerVisita, gravarVisita } from '@/lib/store';
 import { novoRelatorio, relatorioExemplo, hojeISO } from '@/lib/defaults';
+import { semLogin } from '@/lib/sessao';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  const negado = await semLogin();
+  if (negado) return negado;
   return NextResponse.json(await listarRelatorios());
 }
 
 // Cria um relatório: em branco (a partir do modelo), duplicado de outro, ou o exemplo.
 export async function POST(req) {
+  const negado = await semLogin();
+  if (negado) return negado;
   const body = await req.json().catch(() => ({}));
   try {
     let r;

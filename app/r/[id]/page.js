@@ -1,12 +1,14 @@
 import { notFound } from 'next/navigation';
 import Editor from '@/components/Editor';
 import { lerRelatorio } from '@/lib/store';
+import { exigirLogin } from '@/lib/sessao';
 
 export const dynamic = 'force-dynamic';
 // só as telas internas podem ser instaladas como app (a página do cliente abre direto no navegador)
 export const metadata = { manifest: '/manifest.webmanifest' };
 
 export default async function PaginaRelatorio({ params }) {
+  await exigirLogin();
   if (!/^[\w-]{8,64}$/.test(params.id || '')) notFound();
   const r = await lerRelatorio(params.id);
   if (!r) notFound();

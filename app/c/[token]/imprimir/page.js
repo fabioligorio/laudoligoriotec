@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Impressao from '@/components/Impressao';
 import { relatorioPorToken } from '@/lib/store';
+import { paraCliente } from '@/lib/seguranca';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { robots: { index: false, follow: false } };
@@ -10,5 +11,5 @@ export default async function ImpressaoCliente({ params, searchParams }) {
   const r = await relatorioPorToken(params.token);
   if (!r) notFound();
   const so = ['L', 'O'].includes(searchParams?.so) ? searchParams.so : 'B';
-  return <Impressao r={r} qual={so} voltar={`/c/${params.token}`} />;
+  return <Impressao r={paraCliente(r)} qual={so} voltar={`/c/${params.token}`} />;
 }

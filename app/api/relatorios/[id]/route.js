@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { lerRelatorio, gravarRelatorio, excluirRelatorio } from '@/lib/store';
 import { STATUS } from '@/lib/status';
 import { limparRelatorio } from '@/lib/seguranca';
+import { semLogin } from '@/lib/sessao';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,6 +18,8 @@ const EDITAVEIS = [
 ];
 
 export async function GET(_req, { params }) {
+  const negado = await semLogin();
+  if (negado) return negado;
   if (!idValido(params.id)) return NextResponse.json({ erro: 'Id inválido.' }, { status: 400 });
   const r = await lerRelatorio(params.id);
   if (!r) return NextResponse.json({ erro: 'Relatório não encontrado.' }, { status: 404 });
@@ -28,6 +31,8 @@ export async function GET(_req, { params }) {
 // - Com status: salva os campos e muda a situação.
 // - Concluído fica travado; para editar, envie status 'rascunho' ou 'aguardando' (reabrir).
 export async function PUT(req, { params }) {
+  const negado = await semLogin();
+  if (negado) return negado;
   if (!idValido(params.id)) return NextResponse.json({ erro: 'Id inválido.' }, { status: 400 });
   const atual = await lerRelatorio(params.id);
   if (!atual) return NextResponse.json({ erro: 'Relatório não encontrado.' }, { status: 404 });
@@ -75,6 +80,8 @@ export async function PUT(req, { params }) {
 }
 
 export async function DELETE(_req, { params }) {
+  const negado = await semLogin();
+  if (negado) return negado;
   if (!idValido(params.id)) return NextResponse.json({ erro: 'Id inválido.' }, { status: 400 });
   const atual = await lerRelatorio(params.id);
   if (!atual) return NextResponse.json({ ok: true });

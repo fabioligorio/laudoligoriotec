@@ -29,6 +29,12 @@ export async function POST(req) {
     return NextResponse.json({ erro: 'Muitos pedidos seguidos. Fale com a gente pelo WhatsApp.' }, { status: 429 });
   }
 
+  // teto geral por dia, para ninguém lotar o sistema com pedidos falsos
+  const hoje = await contarTentativa('visita-dia', 24 * 60 * 60).catch(() => 0);
+  if (hoje > 100) {
+    return NextResponse.json({ erro: 'Não foi possível enviar agora. Fale com a gente pelo WhatsApp.' }, { status: 429 });
+  }
+
   const { dados, erro } = validarVisita(corpo);
   if (erro) return NextResponse.json({ erro }, { status: 400 });
 

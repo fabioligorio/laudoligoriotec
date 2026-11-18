@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
 import { lerVisita, gravarVisita, excluirVisita, gravarLinkVisita } from '@/lib/store';
 import { STATUS_VISITA, validarVisita, novoTokenVisita } from '@/lib/visitas';
+import { semLogin } from '@/lib/sessao';
 
 export const dynamic = 'force-dynamic';
 
 // body: { status?, obs?, dados?: {...campos do formulário}, gerarLink?: true }
 export async function PUT(req, { params }) {
+  const negado = await semLogin();
+  if (negado) return negado;
   const v = await lerVisita(params.id);
   if (!v) return NextResponse.json({ erro: 'Solicitação não encontrada.' }, { status: 404 });
   const corpo = await req.json().catch(() => ({}));
@@ -32,6 +35,8 @@ export async function PUT(req, { params }) {
 }
 
 export async function DELETE(_req, { params }) {
+  const negado = await semLogin();
+  if (negado) return negado;
   const v = await lerVisita(params.id);
   if (!v) return NextResponse.json({ erro: 'Solicitação não encontrada.' }, { status: 404 });
   await excluirVisita(params.id);

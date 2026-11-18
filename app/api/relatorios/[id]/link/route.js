@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { lerRelatorio, gravarRelatorio, gravarLink, apagarLink } from '@/lib/store';
+import { semLogin } from '@/lib/sessao';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,6 +11,8 @@ const novoToken = () =>
 //  gerar: cria o link (ou reativa o atual)
 //  novo: troca o código (o link antigo para de funcionar)
 export async function POST(req, { params }) {
+  const negado = await semLogin();
+  if (negado) return negado;
   if (!/^[\w-]{8,64}$/.test(params.id || '')) return NextResponse.json({ erro: 'Id inválido.' }, { status: 400 });
   const r = await lerRelatorio(params.id);
   if (!r) return NextResponse.json({ erro: 'Relatório não encontrado.' }, { status: 404 });

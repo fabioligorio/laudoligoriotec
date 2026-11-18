@@ -2,8 +2,10 @@ import { NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
 import { todosRelatorios, lerRelatorio, gravarRelatorio, lerModelo, gravarModelo } from '@/lib/store';
 import { hojeISO } from '@/lib/defaults';
-import { limparRelatorio } from '@/lib/seguranca';
+import { limparRelatorio, limparModelo } from '@/lib/seguranca';
+import { MODELO_PADRAO } from '@/lib/defaults';
 import { STATUS } from '@/lib/status';
+import { semLogin } from '@/lib/sessao';
 
 const CAMPOS = [
   'cliente', 'data', 'num', 'equip', 'comp', 'alim', 'icone', 'eqPhoto',
@@ -20,6 +22,8 @@ export const maxDuration = 60;
 
 // GET: baixa um arquivo com todos os relatórios e o modelo
 export async function GET() {
+  const negado = await semLogin();
+  if (negado) return negado;
   const dados = {
     sistema: 'ligoriotec-laudos',
     versao: 1,
@@ -67,6 +71,8 @@ async function converterFotos(r) {
 // para não passar do limite de tamanho de envio da Vercel).
 // body: { relatorio } ou { modelo, substituirModelo }
 export async function POST(req) {
+  const negado = await semLogin();
+  if (negado) return negado;
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erro: 'Arquivo inválido.' }, { status: 400 });
 
@@ -74,7 +80,7 @@ export async function POST(req) {
     if (body.modelo) {
       const atual = await lerModelo();
       if (atual && !body.substituirModelo) return NextResponse.json({ resultado: 'modelo-mantido' });
-      await gravarModelo(body.modelo);
+      await gravarModelo({ ...MODELO_PADRAO, ...limparModelo(body.modelo, MODELO_PADRAO) });
       return NextResponse.json({ resultado: 'modelo-importado' });
     }
 
