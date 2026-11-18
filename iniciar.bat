@@ -17,8 +17,12 @@ echo Node encontrado:
 node -v
 echo.
 
-if not exist "node_modules\next" (
-  echo Instalando os pacotes. Na primeira vez demora alguns minutos...
+set PRECISA_INSTALAR=0
+if not exist "node_modules\next" set PRECISA_INSTALAR=1
+rem versao do Next.js mudou (atualizacao de seguranca): reinstala os pacotes
+if exist "node_modules\next" node -e "process.exit(require('./node_modules/next/package.json').version.startsWith('15.')?0:1)" || set PRECISA_INSTALAR=1
+if "%PRECISA_INSTALAR%"=="1" (
+  echo Instalando os pacotes. Pode demorar alguns minutos...
   echo.
   call npm install
   if errorlevel 1 (
