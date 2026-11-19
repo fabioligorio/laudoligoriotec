@@ -184,8 +184,12 @@ export default function Solicitacoes({ inicial }) {
                         {zap && <a className="btn ok" href={`${zap}?text=${encodeURIComponent(msgCliente(v))}`} target="_blank" rel="noopener">Enviar pelo WhatsApp</a>}
                         <a className="btn ghost" href={`/visita/${v.token}`} target="_blank" rel="noopener">Ver</a>
                       </div>
+                    ) : v.status === 'realizada' ? (
+                      <small className="vis-link-off">Link desativado: a visita já foi feita{v.linkDesativadoEm ? ` (${quando(v.linkDesativadoEm)})` : ''}.</small>
                     ) : (
-                      <button type="button" className="btn" onClick={() => mudar(v.id, { gerarLink: true })}>Gerar link</button>
+                      <button type="button" className="btn" onClick={() => mudar(v.id, { gerarLink: true })}>
+                        {v.linkDesativadoEm ? 'Gerar link novo' : 'Gerar link'}
+                      </button>
                     )}
                   </div>
                   <div className="vis-acoes">
@@ -200,7 +204,11 @@ export default function Solicitacoes({ inicial }) {
                   </div>
                   <div className="vis-rodape">
                     <label>Situação
-                      <select value={v.status} onChange={(e) => mudar(v.id, { status: e.target.value })}>
+                      <select value={v.status} onChange={(e) => {
+                        const st = e.target.value;
+                        if (st === 'realizada' && v.token && !window.confirm('Marcar como visita feita? O link do cliente será desativado.')) return;
+                        mudar(v.id, { status: st });
+                      }}>
                         {ORDEM_VISITA.map((k) => <option key={k} value={k}>{STATUS_VISITA[k].rotulo}</option>)}
                       </select>
                     </label>

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { lerVisita, gravarVisita, excluirVisita, gravarLinkVisita } from '@/lib/store';
+import { lerVisita, gravarVisita, excluirVisita, gravarLinkVisita, apagarLinkVisita } from '@/lib/store';
 import { STATUS_VISITA, validarVisita, novoTokenVisita } from '@/lib/visitas';
 import { semLogin } from '@/lib/sessao';
 
@@ -25,9 +25,15 @@ export async function PUT(req, { params }) {
   if (corpo.status !== undefined) {
     if (!STATUS_VISITA[corpo.status]) return NextResponse.json({ erro: 'Situação inválida.' }, { status: 400 });
     novo.status = corpo.status;
+    // visita feita: o link do cliente deixa de funcionar
+    if (novo.status === 'realizada' && novo.token) {
+      await apagarLinkVisita(novo.token);
+      novo.token = '';
+      novo.linkDesativadoEm = new Date().toISOString();
+    }
   }
   if (corpo.obs !== undefined) novo.obs = String(corpo.obs).slice(0, 1000);
-  if (corpo.gerarLink && !novo.token) {
+  if (corpo.gerarLink && !novo.token && novo.status !== 'realizada') {
     novo.token = novoTokenVisita();
     await gravarLinkVisita(novo.token, novo.id);
   }
@@ -41,6 +47,7 @@ export async function DELETE(_req, { params }) {
   if (negado) return negado;
   const v = await lerVisita(params.id);
   if (!v) return NextResponse.json({ erro: 'Solicitação não encontrada.' }, { status: 404 });
+  await apagarLinkVisita(v.token);
   await excluirVisita(params.id);
   return NextResponse.json({ ok: true });
 }

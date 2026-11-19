@@ -487,6 +487,7 @@ fieldset.fase-sugestao > legend::before { background: var(--danger); }
 .vis-agenda.ok { background: var(--soft); color: var(--verde-fundo); }
 .vis-cli-link { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 1px dashed var(--line); border-radius: 12px; }
 .vis-cli-link > span { font: 600 11px var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--grafite); }
+.vis-link-off { color: var(--grafite); font-size: 13px; line-height: 1.4; }
 .modal-grande { max-width: 640px; max-height: calc(100dvh - 32px); overflow-y: auto; gap: 12px; }
 .modal-grande fieldset { padding: 14px; }
 .modal-grande select { font: 400 16px var(--f-ui); padding: 12px 10px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--fg); width: 100%; }
