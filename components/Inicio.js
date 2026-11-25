@@ -8,7 +8,7 @@ async function sair() {
 }
 
 // Página inicial depois do login: escolhe entre o Financeiro e os Laudos e orçamentos
-export default function Inicio({ aguardando = 0, rascunhos = 0, concluidos = 0, visitasNovas = 0, visitasAbertas = 0 }) {
+export default function Inicio({ aguardando = 0, rascunhos = 0, concluidos = 0, visitasNovas = 0, visitasAbertas = 0, propostasEnviadas = 0, propostasAprovadas = 0 }) {
   return (
     <>
       <header className="topo">
@@ -69,6 +69,22 @@ export default function Inicio({ aguardando = 0, rascunhos = 0, concluidos = 0, 
             <span className="inicio-rodape">
               <span>
                 {visitasNovas > 0 ? `${visitasNovas} ${visitasNovas === 1 ? 'nova' : 'novas'}` : visitasAbertas > 0 ? `${visitasAbertas} em aberto` : 'Nenhuma em aberto'}
+              </span>
+              <span className="seta" aria-hidden="true">→</span>
+            </span>
+          </Link>
+
+          <Link href="/propostas" className="inicio-card">
+            <span className="inicio-ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" /><path d="M14 3v6h6" /><path d="M8 13h8M8 17h5" /></svg>
+            </span>
+            <span className="inicio-txt">
+              <b>Propostas comerciais</b>
+              <small>Propostas de projeto com link para o cliente ler, baixar em PDF e aprovar.</small>
+            </span>
+            <span className="inicio-rodape">
+              <span>
+                {propostasEnviadas > 0 ? `${propostasEnviadas} aguardando o cliente` : propostasAprovadas > 0 ? `${propostasAprovadas} ${propostasAprovadas === 1 ? 'aprovada' : 'aprovadas'}` : 'Nenhuma pendente'}
               </span>
               <span className="seta" aria-hidden="true">→</span>
             </span>

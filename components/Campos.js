@@ -57,7 +57,7 @@ export function Linhas({ id, linhas, onChange, dinheiro, phA, phB, rotuloAdd }) 
 }
 
 // Comprime a foto no navegador e envia para o servidor
-export async function comprimir(arquivo) {
+export async function comprimir(arquivo, max = 1000) {
   const url = URL.createObjectURL(arquivo);
   try {
     const img = await new Promise((ok, erro) => {
@@ -66,19 +66,22 @@ export async function comprimir(arquivo) {
       im.onerror = erro;
       im.src = url;
     });
-    const max = 1000;
     const sc = Math.min(1, max / Math.max(img.width, img.height));
     const c = document.createElement('canvas');
     c.width = Math.round(img.width * sc);
     c.height = Math.round(img.height * sc);
-    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    const ctx = c.getContext('2d');
+    // fundo branco: imagens PNG com transparência não ficam pretas no JPEG
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.drawImage(img, 0, 0, c.width, c.height);
     return await new Promise((ok) => c.toBlob(ok, 'image/jpeg', 0.85));
   } finally {
     URL.revokeObjectURL(url);
   }
 }
 
-export function Foto({ id, src, onChange, bloqueado, rotulo = 'foto' }) {
+export function Foto({ id, src, onChange, bloqueado, rotulo = 'foto', max = 1000 }) {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState('');
   async function escolher(e) {
@@ -88,7 +91,7 @@ export function Foto({ id, src, onChange, bloqueado, rotulo = 'foto' }) {
     setErro('');
     setEnviando(true);
     try {
-      const blob = await comprimir(f);
+      const blob = await comprimir(f, max);
       const fd = new FormData();
       fd.append('foto', blob, 'foto.jpg');
       const res = await fetch('/api/upload', { method: 'POST', body: fd });
