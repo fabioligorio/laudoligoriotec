@@ -8,7 +8,7 @@ async function sair() {
 }
 
 // Página inicial depois do login: escolhe entre o Financeiro e os Laudos e orçamentos
-export default function Inicio({ aguardando = 0, rascunhos = 0, concluidos = 0, visitasNovas = 0, visitasAbertas = 0, propostasEnviadas = 0, propostasAprovadas = 0 }) {
+export default function Inicio({ aguardando = 0, rascunhos = 0, concluidos = 0, visitasNovas = 0, visitasAbertas = 0, propostasEnviadas = 0, propostasAprovadas = 0, clientes = 0 }) {
   return (
     <>
       <header className="topo">
@@ -86,6 +86,20 @@ export default function Inicio({ aguardando = 0, rascunhos = 0, concluidos = 0, 
               <span>
                 {propostasEnviadas > 0 ? `${propostasEnviadas} aguardando o cliente` : propostasAprovadas > 0 ? `${propostasAprovadas} ${propostasAprovadas === 1 ? 'aprovada' : 'aprovadas'}` : 'Nenhuma pendente'}
               </span>
+              <span className="seta" aria-hidden="true">→</span>
+            </span>
+          </Link>
+
+          <Link href="/clientes" className="inicio-card inicio-largo">
+            <span className="inicio-ic" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0" /><path d="M16 4.5a3.5 3.5 0 0 1 0 7" /><path d="M18 14.5a6.5 6.5 0 0 1 3.5 5.5" /></svg>
+            </span>
+            <span className="inicio-txt">
+              <b>Clientes e link único</b>
+              <small>Um link para cada cliente com todas as visitas, laudos, orçamentos e propostas dele.</small>
+            </span>
+            <span className="inicio-rodape">
+              <span>{clientes === 0 ? 'Nenhum cliente cadastrado' : `${clientes} ${clientes === 1 ? 'cliente' : 'clientes'}`}</span>
               <span className="seta" aria-hidden="true">→</span>
             </span>
           </Link>

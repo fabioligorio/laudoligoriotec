@@ -39,5 +39,5 @@ export async function middleware(req) {
 // ícones, o envio de vídeos (que confere a sessão por conta própria)
 // e o formulário público de solicitação de visita (/visita e /api/visita).
 export const config = {
-  matcher: ['/((?!login|api/login|api/video|api/visita|api/proposta/|visita|c/|p/|_next/|icon|apple-icon|favicon.ico|manifest.webmanifest|exemplo/).*)'],
+  matcher: ['/((?!login|api/login|api/video|api/visita|api/proposta/|visita|c/|p/|cliente/|_next/|icon|apple-icon|favicon.ico|manifest.webmanifest|exemplo/).*)'],
 };

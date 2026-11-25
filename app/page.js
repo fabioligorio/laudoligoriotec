@@ -1,5 +1,5 @@
 import Inicio from '@/components/Inicio';
-import { listarRelatorios, listarVisitas, listarPropostas } from '@/lib/store';
+import { listarRelatorios, listarVisitas, listarPropostas, listarClientes } from '@/lib/store';
 import { exigirLogin } from '@/lib/sessao';
 
 export const dynamic = 'force-dynamic';
@@ -8,7 +8,7 @@ export const metadata = { manifest: '/manifest.webmanifest' };
 
 export default async function Pagina() {
   await exigirLogin();
-  const [lista, visitas, propostas] = await Promise.all([listarRelatorios(), listarVisitas().catch(() => []), listarPropostas().catch(() => [])]);
+  const [lista, visitas, propostas, clientes] = await Promise.all([listarRelatorios(), listarVisitas().catch(() => []), listarPropostas().catch(() => []), listarClientes().catch(() => [])]);
   const conta = (s) => lista.filter((r) => r.status === s).length;
-  return <Inicio aguardando={conta('aguardando')} rascunhos={conta('rascunho')} concluidos={conta('concluido')} visitasNovas={visitas.filter((v) => v.status === 'nova').length} visitasAbertas={visitas.filter((v) => v.status === 'nova' || v.status === 'agendada').length} propostasEnviadas={propostas.filter((p) => p.status === 'enviada').length} propostasAprovadas={propostas.filter((p) => p.status === 'aprovada').length} />;
+  return <Inicio aguardando={conta('aguardando')} rascunhos={conta('rascunho')} concluidos={conta('concluido')} visitasNovas={visitas.filter((v) => v.status === 'nova').length} visitasAbertas={visitas.filter((v) => v.status === 'nova' || v.status === 'agendada').length} propostasEnviadas={propostas.filter((p) => p.status === 'enviada').length} propostasAprovadas={propostas.filter((p) => p.status === 'aprovada').length} clientes={clientes.length} />;
 }

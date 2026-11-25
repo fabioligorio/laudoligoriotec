@@ -48,6 +48,7 @@ export async function POST(req) {
           r.equip = [v.equipamento === 'Outro' ? '' : v.equipamento, v.marca].filter(Boolean).join(' ');
           r.recl = v.problema || '';
           r.visitaId = v.id;
+          if (v.clienteId) r.clienteId = v.clienteId;
           await gravarRelatorio(r);
           await gravarVisita({ ...v, relatorioId: r.id, status: v.status === 'nova' ? 'agendada' : v.status, atualizadoEm: new Date().toISOString() });
           return NextResponse.json(r, { status: 201 });
