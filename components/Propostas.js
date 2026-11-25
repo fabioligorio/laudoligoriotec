@@ -49,6 +49,28 @@ export default function Propostas({ inicial }) {
     }
   }
 
+  // Lê um arquivo .json de proposta e cria a proposta no sistema
+  async function importar(e) {
+    const arquivo = e.target.files?.[0];
+    e.target.value = '';
+    if (!arquivo) return;
+    setErro('');
+    if (arquivo.size > 4 * 1024 * 1024) { setErro('Arquivo grande demais (máximo 4 MB).'); return; }
+    let dados;
+    try {
+      dados = JSON.parse(await arquivo.text());
+    } catch {
+      setErro('Esse arquivo não é uma proposta válida.');
+      return;
+    }
+    if (!dados || typeof dados !== 'object' || !(dados.proposta || dados.titulo || dados.secoes)) {
+      setErro('Esse arquivo não é uma proposta válida.');
+      return;
+    }
+    setEscolhendo(false);
+    await criar({ importar: dados });
+  }
+
   async function excluir(id) {
     if (armado !== id) {
       setArmado(id);
@@ -73,6 +95,7 @@ export default function Propostas({ inicial }) {
         </div>
       </header>
 
+      <input id="importar-proposta" type="file" accept="application/json,.json" onChange={importar} hidden />
       <button className="so-mobile fab" type="button" onClick={() => setEscolhendo(true)} disabled={ocupado} aria-label="Nova proposta">
         <span aria-hidden="true">+</span> Nova
       </button>
@@ -94,6 +117,10 @@ export default function Propostas({ inicial }) {
                 <small>Copia a proposta de catracas com reconhecimento facial, com textos, imagens e valores, para você adaptar.</small>
               </button>
             </div>
+            <label className="tipo-op" htmlFor="importar-proposta">
+              <b>Importar arquivo de proposta</b>
+              <small>Um arquivo .json com a proposta pronta (por exemplo, uma proposta convertida de PDF).</small>
+            </label>
             <p className="hint">Para reaproveitar outra proposta sua, abra ela e use <b>Duplicar</b>.</p>
           </div>
         </div>

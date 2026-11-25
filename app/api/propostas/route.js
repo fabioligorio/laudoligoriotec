@@ -1,10 +1,31 @@
 import { NextResponse } from 'next/server';
+import { put } from '@vercel/blob';
 import { listarPropostas, lerProposta, gravarProposta } from '@/lib/store';
-import { novaProposta, resumoProposta } from '@/lib/propostas';
+import { novaProposta, resumoProposta, limparProposta } from '@/lib/propostas';
+import { ehFoto } from '@/lib/seguranca';
 import { propostaExemplo } from '@/lib/propostaExemplo';
 import { semLogin } from '@/lib/sessao';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+// Imagens que chegam dentro do arquivo importado (data:image/...) vão para o Blob, como as fotos enviadas
+async function guardarImagens(p) {
+  const temBlob = process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID;
+  for (const s of p.secoes || []) {
+    for (const im of s.imagens || []) {
+      const m = String(im.url).match(/^data:image\/(jpeg|png|webp);base64,(.+)$/);
+      if (!m) continue;
+      const bytes = Buffer.from(m[2], 'base64');
+      if (bytes.length > 4 * 1024 * 1024 || !ehFoto(new Uint8Array(bytes))) { im.url = ''; continue; }
+      if (!temBlob) continue; // uso local: a imagem fica dentro da proposta
+      const ext = m[1] === 'jpeg' ? 'jpg' : m[1];
+      const blob = await put(`propostas/${crypto.randomUUID()}.${ext}`, bytes, { access: 'public', contentType: `image/${m[1]}` });
+      im.url = blob.url;
+    }
+    s.imagens = (s.imagens || []).filter((im) => im.url);
+  }
+}
 
 export async function GET() {
   const negado = await semLogin();
@@ -18,7 +39,17 @@ export async function POST(req) {
   if (negado) return negado;
   const body = await req.json().catch(() => ({}));
   let p;
-  if (body.exemplo) {
+  if (body.importar && typeof body.importar === 'object') {
+    // arquivo .json com uma proposta pronta (aceita { proposta: {...} } ou a proposta direto)
+    const dados = body.importar.proposta || body.importar;
+    p = { ...novaProposta(), ...limparProposta(dados) };
+    try {
+      await guardarImagens(p);
+    } catch (e) {
+      console.error('importar imagens', e);
+      return NextResponse.json({ erro: 'Não foi possível gravar as imagens da proposta. Tente de novo.' }, { status: 500 });
+    }
+  } else if (body.exemplo) {
     p = propostaExemplo();
   } else if (body.duplicarDe) {
     const origem = await lerProposta(body.duplicarDe);

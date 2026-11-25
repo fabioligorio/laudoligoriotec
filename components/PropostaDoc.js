@@ -13,6 +13,20 @@ function Item({ t }) {
 export function Blocos({ texto }) {
   return blocos(texto).map((b, i) => {
     if (b.tipo === 'h') return <h3 key={i}>{b.texto}</h3>;
+    if (b.tipo === 'tab') {
+      const [cab, ...corpo] = b.linhas;
+      const n = Math.max(...b.linhas.map((l) => l.length));
+      return (
+        <table key={i} className="prop-tab prop-tab-txt">
+          <thead><tr>{Array.from({ length: n }, (_, k) => <th key={k}>{cab[k] || ''}</th>)}</tr></thead>
+          <tbody>
+            {corpo.map((l, j) => (
+              <tr key={j}>{Array.from({ length: n }, (_, k) => <td key={k} data-rotulo={cab[k] || ''}>{k === 0 ? <b>{l[k]}</b> : l[k]}</td>)}</tr>
+            ))}
+          </tbody>
+        </table>
+      );
+    }
     if (b.tipo === 'ul') return <ul key={i}>{b.itens.filter(Boolean).map((t, j) => <Item key={j} t={t} />)}</ul>;
     if (b.tipo === 'ol') return <ol key={i}>{b.itens.filter(Boolean).map((t, j) => <Item key={j} t={t} />)}</ol>;
     const [forte, resto] = termo(b.texto);
@@ -92,6 +106,7 @@ export default function PropostaDoc({ p }) {
               <tr><td colSpan={3}>Total</td><td className="n">R$ {brl(total)}</td></tr>
             </tfoot>
           </table>
+          {p.notaInvestimento && <p className="prop-nota">{p.notaInvestimento}</p>}
           {(p.opcionais || []).filter((o) => o.titulo || o.texto).map((o, k) => (
             <div key={k} className="prop-opc">
               <h3>Opcional – {o.titulo}</h3>

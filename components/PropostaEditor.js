@@ -25,7 +25,7 @@ const mover = (lista, i, d) => {
   return c;
 };
 
-const AJUDA = 'Uma linha por parágrafo. "- " faz item de lista, "1. " lista numerada, "## " subtítulo. Em itens, o que vem antes de ":" fica em negrito.';
+const AJUDA = 'Uma linha por parágrafo. "- " faz item de lista, "1. " lista numerada, "## " subtítulo e "Coluna 1 | Coluna 2" tabela (a primeira linha é o cabeçalho). Em itens, o que vem antes de ":" fica em negrito.';
 
 export default function PropostaEditor({ inicial }) {
   const router = useRouter();
@@ -254,6 +254,7 @@ export default function PropostaEditor({ inicial }) {
                   <button type="button" className="add" onClick={() => set('itens', [...itens, { desc: '', qtd: 1, valor: '' }])}>+ Adicionar item</button>
                   <p className="pe-total">Total: <b>R$ {brl(totalProposta(p))}</b></p>
                   <Texto id="txtInv" rotulo="Complemento da frase do total" dica="opcional" placeholder="Ex.: pago uma única vez, e o equipamento passa a ser do clube" valor={p.textoInvestimento} onChange={(v) => set('textoInvestimento', v)} />
+                  <Area id="notaInv" rotulo="Observação abaixo da tabela" dica="opcional" linhas={2} placeholder="Ex.: O frete não está incluído." valor={p.notaInvestimento} onChange={(v) => set('notaInvestimento', v)} />
                 </fieldset>
                 <fieldset>
                   <legend>Opcionais</legend>
